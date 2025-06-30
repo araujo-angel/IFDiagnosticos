@@ -1,79 +1,113 @@
-# README - Explicação dos Padrões de Projeto
+# README - Sistema de Gerenciamento de Exames Medicos - IF Diagnosticos
 
-# Visão Geral
-Este projeto implementa um sistema de gerenciamento de exames médicos para a IF Diagnósticos, utilizando vários padrões de projeto para atender aos requisitos especificados. O sistema permite a emissão de laudos em diferentes formatos, aplicação de descontos dinâmicos, notificação de pacientes e priorização de exames.
-![alt text](diagrama_IFDiagnosticos.png)
-# README - Padrões de Projeto no Sistema de Exames Médicos
+## Visao Geral
+Sistema completo para gestao de exames medicos que implementa 8 padroes de projeto para:
+- Emissao de laudos em multiplos formatos
+- Aplicacao de descontos dinamicos
+- Notificacao automatizada de pacientes
+- Priorizacao inteligente de exames
 
-## 1. Strategy (Para formatos de laudo)
-**Problema Resolvido:** 
-- Necessidade de gerar laudos em múltiplos formatos (texto, HTML, PDF) com possibilidade de adicionar novos formatos no futuro sem modificar o código existente (Requisito R4).
+![Diagrama Arquitetural](diagrama_IFDiagnosticos.png)
 
-**Implementação:**
-- Interface `FormatoLaudo` define o contrato para geração de laudos
-- Classes concretas `PDFLaudoStrategy`, `HTMLLaudoStrategy` e `TextoLaudoStrategy` implementam a geração em cada formato
-- Contexto `Laudo` mantém referência à estratégia atual e delega a geração
+## Padroes Implementados
 
-## 2. Abstract Factory (Para criação de exames)
-**Problema Resolvido:**
-- Criação de diferentes tipos de exames (Hemograma, Ressonância) com seus laudos correspondentes, permitindo adicionar novos exames sem alterar código existente (Requisito R3).
+### 1. Strategy (Formatacao de Laudos)
+**Problema**: Gerar laudos em diferentes formatos (PDF/HTML/Texto)
+**Solucao**:
+```java
+laudo.setStrategy(new PDFGenerator());
+String conteudo = laudo.gerar();
+```
+**Beneficios**:
+- Adicionar novos formatos sem alterar codigo existente
+- Cumpre Requisito R4
 
-**Implementação:**
-- Interface `ExameFactory` declara métodos para criar exames e laudos
-- Fábricas concretas `HemogramaFactory`, `RessonanciaFactory` implementam a criação dos objetos específicos
-- Cliente usa apenas a interface abstrata, sem depender de implementações concretas
+### 2. Abstract Factory (Criacao de Exames)
+**Problema**: Criar familias de objetos relacionados (exame + laudo)
+**Diagrama**:
+```mermaid
+classDiagram
+    class ExameFactory {
+        <<interface>>
+        +criarExame()
+        +criarLaudo()
+    }
+    ExameFactory <|-- HemogramaFactory
+```
+**Vantagens**:
+- Isolamento das regras de criacao
+- Suporta Requisito R3 (novos tipos de exames)
 
-## 3. Observer (Para notificações)
-**Problema Resolvido:**
-- Notificação automática de pacientes quando um laudo é emitido, com suporte a múltiplos canais (WhatsApp, e-mail) e extensível para novos canais (Requisito R6).
+### 3. Observer (Notificacoes)
+**Problema**: Notificar pacientes quando laudos ficam prontos
+**Fluxo**:
+1. Exame finaliza e chama notifyObservers()
+2. Observadores sao ordenados por prioridade
+3. Notificacoes sao enviadas (WhatsApp > Email)
 
-**Implementação:**
-- Sujeito `Laudo` mantém lista de `Observer` registrados
-- Classes concretas `WhatsAppNotifier`, `EmailNotifier` implementam notificação por diferentes canais
-- Quando um laudo é emitido, notifica todos os observers registrados
+### 4. Decorator (Descontos)
+**Problema**: Aplicar descontos cumulativos
+**Implementacao**:
+```java
+Exame exame = new ExameBase(200.0);
+exame = new DescontoConvenio(exame); // 15%
+exame = new DescontoIdoso(exame);    // +8%
+double valorFinal = exame.getPreco();
+```
 
-## 4. Decorator (Para descontos)
-**Problema Resolvido:**
-- Aplicação de descontos dinâmicos (convênio, idoso, campanhas) sobre o preço base dos exames, permitindo combinar descontos (Requisito R7).
+### 5. Chain of Responsibility (Validacoes)
+**Problema**: Validar exames com regras especificas
+**Estrutura**:
+```
+ValidadorHemograma -> ValidadorRessonancia -> ValidadorTomografia
+```
+Cada validador processa ou repassa o exame
 
-**Implementação:**
-- Componente `Exame` define interface comum
-- `ExameBase` implementa o comportamento básico
-- Decoradores `DescontoConvenio`, `DescontoIdoso` adicionam funcionalidades de desconto
-- Decoradores envolvem o componente original e modificam o cálculo do preço
+### 6. Template Method (Estrutura de Laudos)
+**Problema**: Garantir estrutura padrao para laudos
+**Esqueleto**:
+```java
+abstract class LaudoTemplate {
+    final void gerarLaudo() {
+        cabecalho();
+        corpo();
+        rodape();
+    }
+    abstract void corpo();
+}
+```
 
-## 5. Chain of Responsibility (Para validações)
-**Problema Resolvido:**
-- Validação específica para cada tipo de exame, com regras particulares para cada um (Requisito R5).
+### 7. State (Status do Exame)
+**Problema**: Gerenciar transicoes de estado
+**Estados**:
+- Pendente
+- Processando
+- Finalizado
+- Cancelado
 
-**Implementação:**
-- Interface `ValidadorHandler` define o contrato para processamento
-- Handlers concretos `ValidadorHemograma`, `ValidadorRessonancia` implementam regras específicas
-- Cada handler decide se processa a requisição ou passa para o próximo na cadeia
+### 8. Priority Queue (Fila de Exames)
+**Problema**: Processar exames por prioridade
+**Ordem**:
+1. Urgente
+2. Prioritario
+3. Rotina
 
-## 6. Priority Queue (Para fila de exames)
-**Problema Resolvido:**
-- Priorização de exames conforme gravidade (URGENTE, POUCO URGENTE, ROTINA) (Requisito R8).
+## Estrutura do Projeto
+```
+src/
+├── factories/       # Padrao Abstract Factory
+├── strategies/      # Strategy para formatos
+├── observers/       # Sistema de notificacao
+├── decorators/      # Implementacao de descontos
+└── templates/       # Template Method para laudos
+```
 
-**Implementação:**
-- `FilaPrioridadeExames` gerencia a ordem de processamento
-- Classes `ExameUrgente`, `ExamePoucoUrgente`, `ExameRotina` implementam a lógica de prioridade
-- Examina são ordenados automaticamente conforme sua prioridade
-
-## 7. Template Method (Para estrutura de laudos)
-**Problema Resolvido:**
-- Estrutura comum para todos os laudos (cabeçalho, corpo, rodapé) com variações específicas por tipo de exame.
-
-**Implementação:**
-- Classe abstrata `LaudoTemplate` define o esqueleto do algoritmo
-- Métodos abstratos `gerarCabecalho()`, `gerarCorpo()`, `gerarRodape()` são implementados por subclasses
-- Subclasses concretas `HemogramaLaudo`, `RessonanciaLaudo` fornecem implementações específicas
-
-## 8. State (Para status do exame)
-**Problema Resolvido:**
-- Controle do ciclo de vida dos exames (Pendente, Processando, Finalizado) com comportamentos distintos em cada estado.
-
-**Implementação:**
-- Interface `StatusExame` define os métodos comuns
-- Classes concretas `StatusPendente`, `StatusProcessando`, `StatusFinalizado` implementam comportamentos específicos
-- Contexto `Exame` delega comportamento para o objeto estado atual.
+## Requisitos Atendidos
+| Padrao            | Requisitos |
+|-------------------|------------|
+| Abstract Factory  | R3         |
+| Strategy          | R4         |
+| Observer          | R6         |
+| Decorator         | R7         |
+| Chain of Resp.    | R5         |
+| Template Method   | R9         |
