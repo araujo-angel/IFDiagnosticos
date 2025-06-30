@@ -2,7 +2,7 @@
 
 # Visão Geral
 Este projeto implementa um sistema de gerenciamento de exames médicos para a IF Diagnósticos, utilizando vários padrões de projeto para atender aos requisitos especificados. O sistema permite a emissão de laudos em diferentes formatos, aplicação de descontos dinâmicos, notificação de pacientes e priorização de exames.
-
+![alt text](diagrama_IFDiagnosticos.png)
 # README - Padrões de Projeto no Sistema de Exames Médicos
 
 ## 1. Strategy (Para formatos de laudo)
