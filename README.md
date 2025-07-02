@@ -7,7 +7,7 @@ Sistema completo para gestao de exames medicos que implementa 8 padroes de proje
 - Notificacao automatizada de pacientes
 - Priorizacao inteligente de exames
 
-![Diagrama Arquitetural](diagrama_IFDiagnosticos.png)
+![alt text](V2-diagrama_IFDiagnosticos-30-06-1.png)
 
 ## Padroes Implementados
 
