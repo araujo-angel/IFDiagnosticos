@@ -8,7 +8,7 @@ classDiagram
         +agendarExame(fabrica: FabricaExame, paciente: Paciente, medico: Medico): Exame
     }
     class GerenciadorDeProcessamentoDeExames {
-        -PriorityQueueExame filaExames
+        -filaExames: PriorityQueue~Exame~
         +adicionarExame(Exame exame)
         +processarProximoExame()
         +notificarLaudoPronto(Exame exame)
@@ -71,11 +71,14 @@ classDiagram
         -medico: Medico
         -laudo: LaudoTemplate
         -status: StatusExame
+        -prioridade: Prioridade
+        
         +validar(): boolean
         +gerarLaudo(): LaudoTemplate
         +marcarComoPronto()
         +mudarEstado(StatusExame estado)
         +getStatus(): String
+        +getPrioridade() Prioridade
     }
     class Hemograma {
         -hemoglobina: double
@@ -100,7 +103,25 @@ classDiagram
         +criarExame(): Exame
         +criarLaudo(formato: String): LaudoTemplate
     }
-    
+    class StatusExame {
+        <<interface>>
+        +marcarComoPronto()*
+        +cancelar()*
+        +processar()*
+        +getStatus()* String
+    }
+    class Prioridade {
+        <<enum>>
+        URGENTE
+        PRIORITARIO
+        ROTINA
+    }    
+    class PriorityQueue~T~ {
+        <<Structure>>
+        +add(element: T)
+        +poll() T
+        +peek() T
+    }
     class DescontoStrategy {
         <<interface>>
         +aplicarDesconto(valor: double): double
@@ -113,28 +134,32 @@ classDiagram
         -PORCENTAGEM: double = 0.08
         +aplicarDesconto(valor: double): double
     }
-      %% Relacionamentos principais
+    
+    %% Relacionamentos principais
     SistemaDiagnosticos --> FabricaExame
     SistemaDiagnosticos --> GerenciadorDeProcessamentoDeExames
     SistemaDiagnosticos --> ProcessadorPagamento
     GerenciadorDeProcessamentoDeExames --> Exame : "1" processa "*"
     GerenciadorDeProcessamentoDeExames --> NotificadorLaudoPronto
+    GerenciadorDeProcessamentoDeExames "1" *-- "1" PriorityQueue~Exame~ : contém
+    GerenciadorDeProcessamentoDeExames "1" --> "*" Exame : processa ordenado por
     NotificadorLaudoPronto --> Exame
     NotificadorLaudoPronto --> Paciente
     ProcessadorPagamento --> Exame
     ProcessadorPagamento --> DescontoStrategy
     Exame "1" *-- "1" LaudoTemplate
     Exame "1" o-- "1" StatusExame
+    Exame "1" --> "1" Prioridade : possui
+    Exame <|-- Hemograma
+    Exame <|-- Ressonancia
+    FabricaExame <|.. FabricaRessonancia
+    FabricaExame --> LaudoTemplate
+    FabricaExame <|.. FabricaHemograma
     LaudoTemplate <|-- LaudoTexto
     LaudoTemplate <|-- LaudoHTML
     LaudoTemplate <|-- LaudoPDF
-    FabricaExame --> LaudoTemplate
     Paciente "1" -- "*" Exame
     Medico "1" -- "*" Exame
-    Exame <|-- Hemograma
-    Exame <|-- Ressonancia
-    FabricaExame <|.. FabricaHemograma
-    FabricaExame <|.. FabricaRessonancia
     DescontoStrategy <|.. DescontoConvenio
     DescontoStrategy <|.. DescontoIdoso
 
