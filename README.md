@@ -13,7 +13,7 @@ O sistema é uma solução completa para gestão de exames médicos, utilizando 
 
 ## **Diagrama de Fluxo do Sistema**
 
-```mermaid
+```
 flowchart TD
     Paciente --> Medico
     Medico --> FabricaExame[Criação de Exame e Laudo]
