@@ -1,5 +1,7 @@
 # **Sistema de Gerenciamento de Exames Médicos**
 
+![Texto alternativo](V3_diagrama.png)
+
 ## **Visão Geral**
 
 O sistema é uma solução completa para gestão de exames médicos, utilizando **padrões de projeto** para garantir:
