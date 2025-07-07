@@ -42,6 +42,7 @@ FabricaExame fabrica = new FabricaHemograma();
 Exame exame = fabrica.criarExame(); // Retorna Hemograma
 ValidadorExame validador = ValidadorFactory.criarValidador(exame);
 
+```
 **Componentes Relacionados**:
 
 * FabricaHemograma
@@ -51,6 +52,7 @@ ValidadorExame validador = ValidadorFactory.criarValidador(exame);
 * ValidadorFactory
 
 ```
+---
 
 ### **2. Factory Method (`criarLaudo()`)**
 
