@@ -7,48 +7,48 @@ O sistema é uma solução completa para gestão de exames médicos, utilizando 
 * **Processamento prioritário** de exames (urgentes, prioritários, rotina)
 * **Geração de laudos** em múltiplos formatos (PDF, HTML, texto)
 * **Aplicação de descontos** dinâmicos (convênio, idoso)
-* **Criação flexível** de diferentes tipos de exames (hemograma, ressonância)
+* **Validação especializada** por tipo de exame (hemograma, ressonância)
+* **Notificação automatizada** quando laudos estão prontos
 
 ---
 
-## **Diagrama de Fluxo do Sistema**
+## **Diagrama de Fluxo do Sistema (Atualizado)**
 
-```
+```mermaid
 flowchart TD
-    Paciente --> Medico
-    Medico --> FabricaExame[Criação de Exame e Laudo]
-    FabricaExame --> Exame
-    Exame --> Gerenciador[Gerenciador (PriorityQueue)]
-    Gerenciador --> Ordenacao[Ordena por Prioridade]
-    Ordenacao --> Finalizacao[Exame Pronto]
-    Finalizacao --> Laudo[Laudo Gerado]
-    Laudo --> Notificacao[Notificação (se aplicável)]
-    Finalizacao --> Pagamento
-    Pagamento --> ProcessadorPagamento
-    ProcessadorPagamento --> Desconto[Aplica Desconto (Strategy)]
+    SistemaDiagnosticos -->|1. Agenda| FabricaExame
+    FabricaExame -->|2. Cria| Exame
+    Exame -->|3. Valida| ValidadorFactory
+    ValidadorFactory -->|ValidadorEspecífico| Exame
+    SistemaDiagnosticos -->|4. Envia| GerenciadorDeProcessamento
+    GerenciadorDeProcessamento -->|5. Processa| ProcessadorPagamento
+    ProcessadorPagamento -->|6. Aplica| DescontoStrategy
+    GerenciadorDeProcessamento -->|7. Gera| GeradorLaudo
+    GeradorLaudo -->|8. Formata| LaudoTemplate
+    GerenciadorDeProcessamento -->|9. Notifica| NotificadorLaudoPronto
 ```
 
----
+# Padrões de Projeto e Suas Aplicações
 
-## **Padrões de Projeto e Suas Aplicações**
+## 1. Abstract Factory (`FabricaExame`)
 
-### **1. Abstract Factory (`FabricaExame`)**
+**Problema**: Criar famílias de objetos relacionados (exames + validadores) de forma consistente.
 
-**Problema**: Criar famílias de objetos relacionados (exame + laudo) de forma consistente.
 **Solução**:
-
 ```java
-FabricaExame fabrica = new FabricaHemograma();  
-Exame exame = fabrica.criarExame();  
-LaudoTemplate laudo = fabrica.criarLaudo("PDF");  
+FabricaExame fabrica = new FabricaHemograma();
+Exame exame = fabrica.criarExame(); // Retorna Hemograma
+ValidadorExame validador = ValidadorFactory.criarValidador(exame);
+
+**Componentes Relacionados**:
+
+* FabricaHemograma
+
+* FabricaRessonancia
+
+* ValidadorFactory
+
 ```
-
-**Vantagens**:
-
-* Isolamento da criação de objetos
-* Facilidade para adicionar novos tipos de exames
-
----
 
 ### **2. Factory Method (`criarLaudo()`)**
 
@@ -81,42 +81,42 @@ public class FabricaRessonancia implements FabricaExame {
 **Solução**:
 
 ```java
-public interface DescontoStrategy {  
-    double aplicarDesconto(double valor);  
-}  
+public class ProcessadorPagamento {
+    private DescontoStrategy estrategia;
+    
+    public void setEstrategia(DescontoStrategy estrategia) {
+        this.estrategia = estrategia;
+    }
+}
 
-public class DescontoConvenio implements DescontoStrategy {  
-    @Override  
-    public double aplicarDesconto(double valor) {  
-        return valor * 0.85; // 15% de desconto  
-    }  
-}  
 ```
-
 **Vantagens**:
 
 * Algoritmos intercambiáveis
 * Fácil adição de novos descontos
 
+**Estratégias Implementadas**:
+
+* DescontoConvenio (15%)
+
+* DescontoIdoso (8%)
+
 ---
 
-### **4. State (`StatusExame`)**
+### **4. State (`StatusExameState`)**
 
 **Problema**: Gerenciar transições de estado (espera, processando, pronto, cancelado).
 **Solução**:
 
 ```java
-public interface StatusExame {  
-    void marcarComoPronto(Exame exame);  
-    void cancelar(Exame exame);  
-}  
+public class Exame {
+    private StatusExameState estado;
+    
+    public void mudarEstado() {
+        estado.mudarEstado(this);
+    }
+}
 
-public class Pronto implements StatusExame {  
-    @Override  
-    public void marcarComoPronto(Exame exame) {  
-        // Já está pronto, não faz nada  
-    }  
-}  
 ```
 
 **Vantagens**:
@@ -124,19 +124,26 @@ public class Pronto implements StatusExame {
 * Lógica de estado centralizada
 * Fácil manutenção
 
+**Estados Implementados**:
+
+* ExamePendente
+* ExameProcessando
+* ExameConcluido
+* ExameCancelado
+
 ---
 
 ### **5. Template Method (`LaudoTemplate`)**
 
-**Problema**: Garantir estrutura consistente para laudos.
+**Problema**:  Definir estrutura comum para laudos com partes variáveis.
 **Solução**:
 
 ```java
 public abstract class LaudoTemplate {  
     public final String gerarLaudoCompleto() {  
-        return cabecalho() + corpo() + rodape();  
+      return gerarCabecalho() + gerarCorpo() + gerarRodape();  
     }  
-    protected abstract String corpo();  
+    // Métodos abstratos implementados nas subclasses
 }  
 ```
 
@@ -144,6 +151,12 @@ public abstract class LaudoTemplate {
 
 * Evita duplicação de código
 * Flexibilidade na implementação
+
+**Implementações**:
+
+* LaudoPDF
+* LaudoHTML
+* LaudoTexto
 
 ---
 
@@ -165,37 +178,46 @@ PriorityQueue<Exame> fila = new PriorityQueue<>(
 
 
 **Prioridades**:
-| Nível        | Valor | Descrição          |
+| Nível        | Valor | Classe Correspondente |
 |--------------|-------|--------------------|
-| URGENTE      | 3     | Casos de emergência|
-| PRIORITARIO  | 2     | Pacientes especiais|
-| ROTINA       | 1     | Exames comuns      |
+| URGENTE      | 3     | Prioridade.URGENTE|
+| PRIORITARIO  | 2     | Prioridade.PRIORITARIO|
+| ROTINA       | 1     | Prioridade.ROTINA |
 
 ---
-
-
-## Resumo dos Padrões Implementados
-
-| Padrão            | Componente-Chave             | Aplicação                                                                 | Benefícios-Chave                                                                 |
-|-------------------|------------------------------|---------------------------------------------------------------------------|---------------------------------------------------------------------------------|
-| **Abstract Factory** | `FabricaExame` e implementações | Criação de famílias de objetos (exame + laudo correspondente)            | - Isola regras de criação<br>- Garante compatibilidade entre produtos           |
-| **Factory Method**  | `criarLaudo()` nas fábricas    | Instanciação de diferentes formatos de laudo (PDF, HTML, texto)           | - Flexibilidade na criação<br>- Delega responsabilidade às subclasses           |
-| **Strategy**       | `DescontoStrategy`            | Cálculo dinâmico de descontos (convênio, idade)                          | - Algoritmos intercambiáveis<br>- Fácil adição de novas políticas               |
-| **State**          | `StatusExame`                 | Controle do ciclo de vida (espera → processando → pronto → cancelado)     | - Simplifica transições de estado<br>- Elimina condicionais complexos           |
-| **Template Method**| `LaudoTemplate`               | Estrutura padronizada para geração de laudos                              | - Reúso de código<br>- Flexibilidade na implementação de partes variáveis      |
-| **Priority Queue** | `GerenciadorDeProcessamento`  | Processamento ordenado por prioridade (urgente > prioritário > rotina)    | - Eficiência operacional<br>- Atendimento conforme criticidade                  |
-
 
 ## **Estrutura do Projeto**
 
 ```plaintext
-src/  
-├── core/              # Lógica principal  
-├── model/             # Entidades (Paciente, Médico, Exame)  
-├── factories/         # Abstract Factory e Factory Method  
-├── strategies/        # Strategy (Descontos)  
-├── states/            # State (Status do Exame)  
-└── templates/         # Template Method (Laudos)  
+src/
+├── core/
+│   ├── SistemaDiagnosticos.java
+│   └── GerenciadorDeProcessamentoDeExames.java
+├── model/
+│   ├── Paciente.java
+│   ├── Medico.java
+│   └── Exame.java
+├── factories/
+│   ├── FabricaExame.java
+│   ├── FabricaHemograma.java
+│   └── FabricaRessonancia.java
+├── strategies/
+│   ├── DescontoStrategy.java
+│   ├── DescontoConvenio.java
+│   └── DescontoIdoso.java
+├── states/
+│   ├── StatusExameState.java
+│   ├── ExamePendente.java
+│   └── ExameConcluido.java
+├── templates/
+│   ├── LaudoTemplate.java
+│   ├── LaudoPDF.java
+│   └── LaudoHTML.java
+└── validators/
+    ├── ValidadorFactory.java
+    ├── ValidadorHemograma.java
+    └── ValidadorRessonancia.java
+
 ```
 
 ## **Como Executar**
