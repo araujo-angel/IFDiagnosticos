@@ -52,6 +52,8 @@ ValidadorExame validador = ValidadorFactory.criarValidador(exame);
 * ValidadorFactory
 
 ```
+```
+
 ---
 
 ### **2. Factory Method (`criarLaudo()`)**
