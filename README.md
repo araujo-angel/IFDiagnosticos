@@ -12,7 +12,7 @@ O sistema é uma solução completa para gestão de exames médicos, utilizando 
 
 ---
 
-## **Diagrama de Fluxo do Sistema (Atualizado)**
+## **Diagrama de Fluxo do Sistema **
 
 ```mermaid
 flowchart TD
