@@ -1,8 +1,0 @@
-/**
- * 
- */
-/**
- * 
- */
-module IFDiagnosticos_App {
-}
