@@ -1,7 +1,7 @@
 # ST Diagnósticos
 
 Sistema para gerenciamento de exames médicos, incluindo agendamento, processamento, pagamento, geração de laudos e envio de notificações automáticas.
-![Diagrama do Sistema](V5_class_diagram.png)
+
 
 ## Funcionalidades
 
@@ -24,7 +24,6 @@ Camadas principais:
 * **Pagamento**: Aplicação de estratégias de desconto.
 * **Laudos**: Geração e decoração de laudos médicos.
 * **Notificação**: Envio de mensagens automatizadas.
-
 
 ## Classes e Responsabilidades
 
@@ -233,6 +232,12 @@ src/
 ```
 ---
 
+
+![Diagrama de Classes](V5_class_diagram.png)
+![Diagrama de Sequência](V5_sequence_diagram.png)
+![Diagrama de Fluxo](V5_flowchart_diagram.png)
+
+---
 ## **Como Executar**
 
 1. Clone o repositório:
@@ -270,4 +275,3 @@ src/
 
 * **Tecnologias**: Java, Padrões de Projeto
 * **Licença**: [MIT](LICENSE)
-
