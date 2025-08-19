@@ -1,194 +1,186 @@
-# **Sistema de Gerenciamento de Exames Médicos**
+# ST Diagnósticos
 
-![Texto alternativo](V3_diagrama.png)
+Sistema para gerenciamento de exames médicos, incluindo agendamento, processamento, pagamento, geração de laudos e envio de notificações automáticas.
+![Diagrama do Sistema](V5_class_diagram.png)
 
-## **Visão Geral**
+## Funcionalidades
 
-O sistema é uma solução completa para gestão de exames médicos, utilizando **padrões de projeto** para garantir:
+* Agendamento de exames médicos.
+* Processamento de exames com controle de estados.
+* Validação específica por tipo de exame.
+* Estratégias de desconto (convênio, idade, etc.).
+* Geração de laudos em múltiplos formatos (Texto, HTML, PDF).
+* Notificações automáticas para pacientes (WhatsApp, Telegram).
 
-* **Processamento prioritário** de exames (urgentes, prioritários, rotina)
-* **Geração de laudos** em múltiplos formatos (PDF, HTML, texto)
-* **Aplicação de descontos** dinâmicos (convênio, idoso)
-* **Validação especializada** por tipo de exame (hemograma, ressonância)
-* **Notificação automatizada** quando laudos estão prontos
+## Arquitetura
+
+O sistema adota uma arquitetura modular e orientada a objetos, organizada em torno da fachada (`SistemaDiagnosticosFacade`), que centraliza a comunicação entre módulos.
+
+Camadas principais:
+
+* **Interface de Entrada**: Ponto inicial do sistema (`SistemaDiagnosticos`).
+* **Gerenciamento de Exames**: Agendamento, estados e processamento.
+* **Validação**: Verificação de regras específicas por tipo de exame.
+* **Pagamento**: Aplicação de estratégias de desconto.
+* **Laudos**: Geração e decoração de laudos médicos.
+* **Notificação**: Envio de mensagens automatizadas.
+
+
+## Classes e Responsabilidades
+
+### Sistema
+
+* **SistemaDiagnosticos**: Classe principal, contém o método `main`.
+* **SistemaDiagnosticosFacade**: Fachada que centraliza o fluxo (agendamento, processamento, pagamento, laudo, notificação).
+
+### Exames
+
+* **Exame (abstract)**: Classe base que contém informações do exame, paciente, médico e estado.
+* **Hemograma, Ressonancia**: Subclasses de `Exame`, especializações com atributos próprios.
+* **FabricaExame (interface)**: Define contrato para criação de exames.
+* **FabricaHemograma, FabricaRessonancia**: Implementações concretas.
+
+### Validação
+
+* **ValidadorExame (interface)**: Contrato para validadores.
+* **ValidadorHemograma, ValidadorRessonancia**: Implementações específicas.
+* **ValidadorFactory**: Cria instâncias de validadores corretos para cada exame.
+
+### Pagamento
+
+* **ProcessadorPagamento**: Realiza processamento financeiro.
+* **DescontoStrategy (interface)**: Define cálculo de descontos.
+* **DescontoConvenio, DescontoIdoso**: Estratégias concretas.
+
+### Laudos
+
+* **GeradorLaudo**: Orquestra a criação dos laudos.
+* **LaudoTemplate (abstract)**: Estrutura base de laudo (cabeçalho, corpo, rodapé).
+* **LaudoTexto, LaudoHTML, LaudoPDF**: Diferentes implementações.
+* **DecoradorLaudo (abstract)**: Classe base para adicionar comportamento.
+* **DecoradorCarimbo**: Adiciona carimbo a laudos.
+
+### Processamento de Exames
+
+* **GerenciadorDeProcessamentoDeExames**: Gerencia fila de exames e mudanças de estado.
+* **StatusExameState (interface)**: Define transições possíveis.
+* **ExamePendente, ExameProcessando, ExameConcluido, ExameCancelado**: Estados concretos.
+
+### Notificações
+
+* **NotificadorObserver (interface)**: Observadores de eventos do sistema.
+* **NotificadorWhatsApp, NotificadorTelegram**: Implementações concretas.
+
+### Usuários
+
+* **Paciente**: Contém dados pessoais, exames e informações de convênio.
+* **Medico**: Responsável por solicitar exames.
+
+## Relações Entre Classes
+
+| Classe Fonte                       | Relacionada a                                                          | Tipo de Relação |
+| ---------------------------------- | ---------------------------------------------------------------------- | --------------- |
+| SistemaDiagnosticos                | SistemaDiagnosticosFacade                                              | Composição      |
+| SistemaDiagnosticosFacade          | Fábricas, Validadores, Pagamento, Laudos, Processamento, Notificadores | Coordenação     |
+| Exame                              | Paciente, Medico, StatusExameState, LaudoTemplate                      | Agregação       |
+| FabricaExame                       | FabricaHemograma, FabricaRessonancia                                   | Herança         |
+| ValidadorFactory                   | ValidadorExame                                                         | Criação         |
+| ProcessadorPagamento               | DescontoStrategy                                                       | Strategy        |
+| LaudoTemplate                      | LaudoTexto, LaudoHTML, LaudoPDF                                        | Template Method |
+| LaudoTemplate                      | DecoradorLaudo                                                         | Decorator       |
+| GerenciadorDeProcessamentoDeExames | NotificadorObserver                                                    | Observer        |
+| NotificadorObserver                | NotificadorWhatsApp, NotificadorTelegram                               | Implementação   |
+
 
 ---
-
-## **Diagrama de Fluxo do Sistema **
+## **Fluxo do Sistema**
 
 ```mermaid
 flowchart TD
-    SistemaDiagnosticos -->|1. Agenda| FabricaExame
-    FabricaExame -->|2. Cria| Exame
-    Exame -->|3. Valida| ValidadorFactory
-    ValidadorFactory -->|ValidadorEspecífico| Exame
-    SistemaDiagnosticos -->|4. Envia| GerenciadorDeProcessamento
-    GerenciadorDeProcessamento -->|5. Processa| ProcessadorPagamento
-    ProcessadorPagamento -->|6. Aplica| DescontoStrategy
-    GerenciadorDeProcessamento -->|7. Gera| GeradorLaudo
-    GeradorLaudo -->|8. Formata| LaudoTemplate
-    GerenciadorDeProcessamento -->|9. Notifica| NotificadorLaudoPronto
-```
+    SistemaDiagnosticos -->|1. Agenda| SistemaDiagnosticosFacade
+    SistemaDiagnosticosFacade -->|2. Cria| FabricaExame
+    FabricaExame --> Exame
+    SistemaDiagnosticosFacade -->|3. Valida| ValidadorFactory
+    ValidadorFactory --> ValidadorExame
 
-# Padrões de Projeto e Suas Aplicações
+    SistemaDiagnosticosFacade -->|4. Adiciona| GerenciadorDeProcessamentoDeExames
+    GerenciadorDeProcessamentoDeExames -->|5. Processa| Exame
+    GerenciadorDeProcessamentoDeExames -->|6. Marca pronto| Exame
 
-## 1. Abstract Factory (`FabricaExame`)
+    SistemaDiagnosticosFacade -->|7. Paga| ProcessadorPagamento
+    ProcessadorPagamento --> DescontoStrategy
 
-**Problema**: Criar famílias de objetos relacionados (exames + validadores) de forma consistente.
+    SistemaDiagnosticosFacade -->|8. Gera laudo| GeradorLaudo
+    GeradorLaudo --> LaudoTemplate
+    LaudoTemplate --> DecoradorLaudo
 
-**Solução**:
-```java
-FabricaExame fabrica = new FabricaHemograma();
-Exame exame = fabrica.criarExame(); // Retorna Hemograma
-ValidadorExame validador = ValidadorFactory.criarValidador(exame);
-
-```
-**Componentes Relacionados**:
-
-* FabricaHemograma
-
-* FabricaRessonancia
-
-* ValidadorFactory
-
-```
+    GerenciadorDeProcessamentoDeExames -->|9. Notifica| NotificadorObserver
+    NotificadorObserver --> Paciente
 ```
 
 ---
 
-### **2. Factory Method (`criarLaudo()`)**
+## **Padrões de Projeto Utilizados**
 
-**Problema**: Permitir que subclasses decidam qual implementação de laudo criar.
-**Solução**:
+### **1. Facade (`SistemaDiagnosticosFacade`)**
 
-```java
-public class FabricaRessonancia implements FabricaExame {  
-    @Override  
-    public LaudoTemplate criarLaudo(String formato) {  
-        return switch (formato) {  
-            case "PDF" -> new LaudoPDF();  
-            case "HTML" -> new LaudoHTML();  
-            default -> new LaudoTexto();  
-        };  
-    }  
-}  
-```
-
-**Vantagens**:
-
-* Flexibilidade na criação de objetos
-* Baixo acoplamento
+* Simplifica o acesso a funcionalidades complexas (agendar, validar, pagar, gerar laudo).
+* Cliente interage apenas com a fachada, não com subsistemas diretamente.
 
 ---
 
-### **3. Strategy (`DescontoStrategy`)**
+### **2. Abstract Factory (`FabricaExame`)**
 
-**Problema**: Variar algoritmos de desconto sem modificar a classe principal.
-**Solução**:
-
-```java
-public class ProcessadorPagamento {
-    private DescontoStrategy estrategia;
-    
-    public void setEstrategia(DescontoStrategy estrategia) {
-        this.estrategia = estrategia;
-    }
-}
-
-```
-**Vantagens**:
-
-* Algoritmos intercambiáveis
-* Fácil adição de novos descontos
-
-**Estratégias Implementadas**:
-
-* DescontoConvenio (15%)
-
-* DescontoIdoso (8%)
+* Cria famílias de exames (`Hemograma`, `Ressonância`) de forma consistente.
+* Cada exame tem seu próprio **validador especializado**.
 
 ---
 
-### **4. State (`StatusExameState`)**
+### **3. State (`StatusExameState`)**
 
-**Problema**: Gerenciar transições de estado (espera, processando, pronto, cancelado).
-**Solução**:
+* Define o ciclo de vida do exame: `Pendente → Processando → Concluído → Cancelado`.
+* Evita lógica condicional extensa dentro de `Exame`.
 
-```java
-public class Exame {
-    private StatusExameState estado;
-    
-    public void mudarEstado() {
-        estado.mudarEstado(this);
-    }
-}
+---
 
-```
+### **4. Strategy (`DescontoStrategy`)**
 
-**Vantagens**:
+* Permite escolher diferentes regras de desconto no pagamento.
+* Implementações:
 
-* Lógica de estado centralizada
-* Fácil manutenção
-
-**Estados Implementados**:
-
-* ExamePendente
-* ExameProcessando
-* ExameConcluido
-* ExameCancelado
+  * `DescontoConvenio` (15%)
+  * `DescontoIdoso` (8%)
 
 ---
 
 ### **5. Template Method (`LaudoTemplate`)**
 
-**Problema**:  Definir estrutura comum para laudos com partes variáveis.
-**Solução**:
-
-```java
-public abstract class LaudoTemplate {  
-    public final String gerarLaudoCompleto() {  
-      return gerarCabecalho() + gerarCorpo() + gerarRodape();  
-    }  
-    // Métodos abstratos implementados nas subclasses
-}  
-```
-
-**Vantagens**:
-
-* Evita duplicação de código
-* Flexibilidade na implementação
-
-**Implementações**:
-
-* LaudoPDF
-* LaudoHTML
-* LaudoTexto
+* Estrutura fixa do laudo: `Cabeçalho + Corpo + Rodapé`.
+* Implementações concretas: `LaudoTexto`, `LaudoHTML`, `LaudoPDF`.
 
 ---
 
-### **6. Priority Queue (`GerenciadorDeProcessamento`)**
+### **6. Decorator (`DecoradorLaudo`)**
 
-**Problema**: Processar exames por ordem de prioridade.
-**Solução**:
+* Permite enriquecer laudos sem modificar classes originais.
+* Exemplo: `DecoradorCarimbo` adiciona assinatura/carimbo oficial.
 
-```java
-PriorityQueue<Exame> fila = new PriorityQueue<>(  
-    Comparator.comparing(Exame::getPrioridade).reversed()  
-);  
-```
+---
 
-**Vantagens**:
+### **7. Observer (`NotificadorObserver`)**
 
-* Exames urgentes são processados primeiro
-* Eficiência na gestão de filas
+* Pacientes são notificados automaticamente quando o laudo está pronto.
+* Implementações: `NotificadorWhatsApp`, `NotificadorTelegram`.
 
+---
 
-**Prioridades**:
-| Nível        | Valor | Classe Correspondente |
-|--------------|-------|--------------------|
-| URGENTE      | 3     | Prioridade.URGENTE|
-| PRIORITARIO  | 2     | Prioridade.PRIORITARIO|
-| ROTINA       | 1     | Prioridade.ROTINA |
+### **8. Priority Queue (`GerenciadorDeProcessamentoDeExames`)**
+
+* Exames são processados por prioridade:
+
+  * **ALTA** → Atendidos primeiro
+  * **MÉDIA** → Processamento intermediário
+  * **BAIXA** → Últimos na fila
 
 ---
 
@@ -198,7 +190,7 @@ PriorityQueue<Exame> fila = new PriorityQueue<>(
 src/
 ├── core/
 │   ├── SistemaDiagnosticos.java
-│   └── GerenciadorDeProcessamentoDeExames.java
+│   └── SistemaDiagnosticosFacade.java
 ├── model/
 │   ├── Paciente.java
 │   ├── Medico.java
@@ -207,41 +199,75 @@ src/
 │   ├── FabricaExame.java
 │   ├── FabricaHemograma.java
 │   └── FabricaRessonancia.java
-├── strategies/
+├── validators/
+│   ├── ValidadorFactory.java
+│   ├── ValidadorExame.java
+│   ├── ValidadorHemograma.java
+│   └── ValidadorRessonancia.java
+├── payments/
+│   ├── ProcessadorPagamento.java
 │   ├── DescontoStrategy.java
 │   ├── DescontoConvenio.java
 │   └── DescontoIdoso.java
 ├── states/
 │   ├── StatusExameState.java
 │   ├── ExamePendente.java
-│   └── ExameConcluido.java
-├── templates/
+│   ├── ExameProcessando.java
+│   ├── ExameConcluido.java
+│   └── ExameCancelado.java
+├── reports/
+│   ├── GeradorLaudo.java
 │   ├── LaudoTemplate.java
+│   ├── LaudoTexto.java
+│   ├── LaudoHTML.java
 │   ├── LaudoPDF.java
-│   └── LaudoHTML.java
-└── validators/
-    ├── ValidadorFactory.java
-    ├── ValidadorHemograma.java
-    └── ValidadorRessonancia.java
-
+│   └── decorators/
+│       ├── DecoradorLaudo.java
+│       └── DecoradorCarimbo.java
+├── observers/
+│   ├── NotificadorObserver.java
+│   ├── NotificadorWhatsApp.java
+│   └── NotificadorTelegram.java
+└── manager/
+    └── GerenciadorDeProcessamentoDeExames.java
 ```
+---
 
 ## **Como Executar**
 
-1. Clone o repositório
-2. Execute `SistemaDiagnosticos.main()`
-3. Use o menu interativo para agendar exames
+1. Clone o repositório:
+
+   ```bash
+   git clone https://github.com/usuario/sistema-diagnosticos.git
+   cd sistema-diagnosticos
+   ```
+2. Compile e execute a classe principal:
+
+   ```bash
+   javac src/core/SistemaDiagnosticos.java
+   java core.SistemaDiagnosticos
+   ```
+3. Use o menu interativo para:
+
+   * Agendar exames
+   * Processar fila
+   * Pagar com desconto
+   * Gerar laudos
+   * Receber notificações
 
 ---
 
 ## **Benefícios do Sistema**
 
-* **Escalável** (novos exames, formatos, descontos)
-* **Manutenível** (padrões bem definidos)
-* **Eficiente** (processamento por prioridade)
+* **Escalável** → novos exames, laudos, descontos e notificadores podem ser adicionados facilmente.
+* **Flexível** → padrões permitem customizações sem alterar código existente.
+* **Organizado** → responsabilidades bem separadas entre camadas.
+* **Manutenível** → cada funcionalidade encapsulada em sua própria classe.
+
 ---
+
 ## **Dev**
-- **Tecnologias**: Java, Padrões de Projeto
-- **Licença**: [MIT](LICENSE)
-- **Mermaid**: [Diagrama](https://www.mermaidchart.com/app/projects/5fe31175-96dd-4c3f-b4db-515028f1cfeb/diagrams/bdcaaad5-177a-4085-8695-a40b25135174/share/invite/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkb2N1bWVudElEIjoiYmRjYWFhZDUtMTc3YS00MDg1LTg2OTUtYTQwYjI1MTM1MTc0IiwiYWNjZXNzIjoiVmlldyIsImlhdCI6MTc1MTU1MDc1M30.DR11f8DgZZk35l2Pu9_BsORUpEhSauKz4Dhe1x_xvl4)
----
+
+* **Tecnologias**: Java, Padrões de Projeto
+* **Licença**: [MIT](LICENSE)
+
