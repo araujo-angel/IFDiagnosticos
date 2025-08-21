@@ -8,7 +8,7 @@ public class ProcessadorPagamento {
     private DescontoStrategy descontoStrategy;
     private double custoFinal;
 
-    public ProcessadorPagamento(Exame exame) {
+    public ProcessadorPagamento(Exame exame, DescontoStrategy estrategia) {
         this.exame = exame;
     }
 
