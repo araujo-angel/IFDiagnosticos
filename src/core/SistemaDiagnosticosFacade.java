@@ -16,7 +16,6 @@ import reports.template.LaudoTemplate;
 
 public class SistemaDiagnosticosFacade {
 
-    // Agendar exame
     public Exame agendarExame(String tipoExame, String codigo, double valorBase,
                               Date dataSolicitacao, Prioridade prioridade,
                               Paciente paciente, Medico medico) {
@@ -30,19 +29,16 @@ public class SistemaDiagnosticosFacade {
         return exame;
     }
 
-    // Processar exame
     public void processarExame(Exame exame) {
         exame.avancarEstado();
         exame.avancarEstado();
     }
 
-    // Pagar exame
     public void pagarExame(Exame exame, DescontoStrategy estrategia) {
         ProcessadorPagamento processador = new ProcessadorPagamento(exame, estrategia);
         processador.processarPagamento();
     }
 
-    // Gerar laudo usando registry
     public String gerarLaudo(Exame exame, String formato, boolean printConsole) {
         LaudoTemplate template = LaudoFactoryRegistry.getTemplate(formato);
         GeradorLaudo gerador = new GeradorLaudo(template);

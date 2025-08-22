@@ -8,4 +8,9 @@ public abstract class DecoradorLaudo implements LaudoTemplate {
     public DecoradorLaudo(LaudoTemplate laudo) {
         this.laudo = laudo;
     }
+
+    public void gerarLaudo(String cabecalho, String corpo, String rodape, String nomeArquivo) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'gerarLaudo'");
+    }
 }

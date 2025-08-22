@@ -21,7 +21,6 @@ public class LaudoHtml implements LaudoTemplate {
 
     @Override
     public String salvarEmArquivo(String conteudo, String nomeArquivo) {
-        // Pega a pasta Documentos do usuário
         String userHome = System.getProperty("user.home");
         File pasta = new File(userHome + File.separator + "Documents" + File.separator + "Laudos");
         pasta.mkdirs();

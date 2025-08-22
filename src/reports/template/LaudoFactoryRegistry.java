@@ -7,7 +7,6 @@ public class LaudoFactoryRegistry {
     private static final Map<String, LaudoTemplate> registry = new HashMap<>();
 
     static {
-        // registros padrão
         registry.put("texto", new LaudoTexto());
         registry.put("txt", new LaudoTexto());
         registry.put("html", new LaudoHtml());
