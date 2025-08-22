@@ -29,6 +29,6 @@ public class Medico {
 
 
     public Exame solicitarExame(Paciente paciente, String tipoExame, FabricaExame fabrica) {
-        return fabrica.criarExame(paciente, this);
+        return fabrica.criarExame(tipoExame, 0, null, null, paciente, this);
     }
 }

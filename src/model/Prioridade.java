@@ -2,6 +2,6 @@ package model;
 
 public enum Prioridade {
     ALTA,
-    MÉDIA,
+    MEDIA,
     BAIXA;
 }
