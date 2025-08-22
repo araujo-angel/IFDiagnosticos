@@ -3,7 +3,6 @@ package reports.template;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 import java.io.File;
 
@@ -31,7 +30,6 @@ public class LaudoPdf implements LaudoTemplate {
             document.addPage(page);
 
             PDPageContentStream contentStream = new PDPageContentStream(document, page);
-            contentStream.setFont(PDType1Font.HELVETICA, 12);
             contentStream.beginText();
             contentStream.setLeading(14.5f);
             contentStream.newLineAtOffset(50, 700);

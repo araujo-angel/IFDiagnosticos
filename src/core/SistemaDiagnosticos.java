@@ -1,9 +1,6 @@
 package core;
 
-
 import java.util.Date;
-
-import javax.security.auth.login.FailedLoginException;
 
 import factories.ExameFactoryRegistry;
 import factories.FabricaHemograma;
@@ -18,12 +15,12 @@ import model.exame.Exame;
 import observer.notifiers.EmailNotifier;
 import validators.ValidadorExame;
 import validators.ValidadorFactory;
-
 import payments.DescontoConvenio;
 
 public class SistemaDiagnosticos {
     public static void main(String[] args) {
-        // --- Inicializa registro de fábricas ---
+
+        // --- Inicializa registro de fábricas de exame ---
         ExameFactoryRegistry.registerFactory("hemograma", new FabricaHemograma());
         ExameFactoryRegistry.registerFactory("ressonancia", new FabricaRessonancia());
 
@@ -54,12 +51,8 @@ public class SistemaDiagnosticos {
 
         // --- GERENCIADOR DE PROCESSAMENTO ---
         GerenciadorDeProcessamentoDeExames gerenciador = new GerenciadorDeProcessamentoDeExames();
-
-        // Adiciona notificadores (nesse caso, e-mail para cada paciente)
         gerenciador.adicionarNotificador(new EmailNotifier(paciente1.getEmail()));
         gerenciador.adicionarNotificador(new EmailNotifier(paciente2.getEmail()));
-
-        // Adiciona exames na fila
         gerenciador.adicionarExame(exame1);
         gerenciador.adicionarExame(exame2);
 
@@ -73,13 +66,11 @@ public class SistemaDiagnosticos {
             System.out.println("----");
         }
 
-        // --- GERAR LAUDO (se tiver implementado) ---
-       /*  
-        String laudo1 = facade.gerarLaudo(exame1, "texto");
-        System.out.println("Laudo Hemograma:\n" + laudo1);
+        // --- GERAR LAUDOS ---
+        String laudo1 = facade.gerarLaudo(exame1, "texto", true);
+        System.out.println("Laudo Hemograma salvo em: " + laudo1);
 
-        String laudo2 = facade.gerarLaudo(exame2, "texto");
-        System.out.println("Laudo Ressonância:\n" + laudo2);
-        */
+        String laudo2 = facade.gerarLaudo(exame2, "pdf", true);
+        System.out.println("Laudo Ressonância salvo em: " + laudo2);
     }
 }
