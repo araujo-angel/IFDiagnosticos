@@ -1,9 +1,9 @@
 package factories;
 
-import model.Exame;
 import model.Medico;
 import model.Paciente;
-import model.Prioridade;
+import model.enums.Prioridade;
+import model.exame.Exame;
 
 import java.util.Date;
 

@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
 
-import model.Exame;
+import model.exame.Exame;
 import observer.NotificadorObserver;
 
 public class GerenciadorDeProcessamentoDeExames {

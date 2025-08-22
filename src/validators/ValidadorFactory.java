@@ -1,8 +1,8 @@
 package validators;
 
-import model.Exame;
-import model.Hemograma;
-import model.Ressonancia;
+import model.exame.Exame;
+import model.exame.Hemograma;
+import model.exame.Ressonancia;
 
 public class ValidadorFactory {
     public static ValidadorExame criarValidador(Exame exame) {

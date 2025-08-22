@@ -3,10 +3,10 @@ import java.util.Date;
 
 import factories.ExameFactoryRegistry;
 import factories.FabricaExame;
-import model.Exame;
 import model.Medico;
 import model.Paciente;
-import model.Prioridade;
+import model.enums.Prioridade;
+import model.exame.Exame;
 import payments.DescontoStrategy;
 import payments.ProcessadorPagamento;
 

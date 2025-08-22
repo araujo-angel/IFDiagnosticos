@@ -2,11 +2,11 @@ package factories;
 
 import java.util.Date;
 
-import model.Exame;
-import model.Hemograma;
 import model.Medico;
 import model.Paciente;
-import model.Prioridade;
+import model.enums.Prioridade;
+import model.exame.Exame;
+import model.exame.Hemograma;
 
 public class FabricaHemograma implements FabricaExame {
     @Override

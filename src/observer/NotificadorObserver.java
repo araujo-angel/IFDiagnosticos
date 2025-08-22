@@ -1,6 +1,6 @@
 package observer;
 
-import model.Exame;
+import model.exame.Exame;
 
 public interface NotificadorObserver {
     void atualizar(Exame exame);

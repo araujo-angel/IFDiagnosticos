@@ -1,6 +1,7 @@
 package model;
 
 import factories.FabricaExame;
+import model.exame.Exame;
 
 public class Medico {
     private String nome;

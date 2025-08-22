@@ -1,10 +1,11 @@
 package factories;
 import java.util.Date;
-import model.Exame;
+
 import model.Medico;
 import model.Paciente;
-import model.Prioridade;
-import model.Ressonancia;
+import model.enums.Prioridade;
+import model.exame.Exame;
+import model.exame.Ressonancia;
 
 
 public class FabricaRessonancia implements FabricaExame {

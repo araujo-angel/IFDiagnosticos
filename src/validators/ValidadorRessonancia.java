@@ -1,8 +1,9 @@
 package validators;
 
-import model.Exame;
-import model.Ressonancia;
-import model.FaixaEtaria;
+import model.enums.FaixaEtaria;
+import model.exame.Exame;
+import model.exame.Ressonancia;
+
 import java.util.List;
 import java.util.Arrays;
 import java.util.ArrayList;

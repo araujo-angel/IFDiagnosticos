@@ -1,8 +1,8 @@
 package validators;
 
-import model.Exame;
-import model.Hemograma;
-import model.Sexo;
+import model.enums.Sexo;
+import model.exame.Exame;
+import model.exame.Hemograma;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -6,6 +6,10 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 
+import model.enums.FaixaEtaria;
+import model.enums.Sexo;
+import model.exame.Exame;
+
 public class Paciente {
     private String nome;
     private String cpf;
@@ -59,9 +63,21 @@ public class Paciente {
         return temConvenio;
     }
 
-    public Sexo getSexo() { return sexo; }
+    public void setSexo(Sexo sexo)  {
+        this.sexo = sexo;
+    }
+
+    public Sexo getSexo() { 
+        return sexo; 
+    }
+
+    public void setFaixaEtaria(FaixaEtaria faixaEtaria)  {
+        this.faixaEtaria = faixaEtaria;
+    }
     
-    public FaixaEtaria getFaixaEtaria() { return faixaEtaria; }
+    public FaixaEtaria getFaixaEtaria() { 
+        return faixaEtaria; 
+    }
 
     public int getIdade() {
 

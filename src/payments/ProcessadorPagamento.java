@@ -1,6 +1,6 @@
 package payments;
 
-import model.Exame;
+import model.exame.Exame;
 
 public class ProcessadorPagamento {
 

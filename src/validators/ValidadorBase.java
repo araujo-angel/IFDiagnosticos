@@ -1,8 +1,9 @@
 package validators;
 
-import model.Exame;
 import java.util.ArrayList;
 import java.util.List;
+
+import model.exame.Exame;
 
 public abstract class ValidadorBase implements ValidadorExame {
 
