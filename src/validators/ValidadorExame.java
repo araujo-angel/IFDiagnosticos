@@ -1,7 +1,10 @@
 package validators;
 
+import java.util.List;
+
 import model.Exame;
 
 public interface ValidadorExame {
-    boolean validar(Exame exame);
+    List<String> validar(Exame exame);
+
 }

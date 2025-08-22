@@ -2,14 +2,37 @@ package validators;
 
 import model.Exame;
 import model.Hemograma;
+import model.Sexo;
 
-public class ValidadorHemograma implements ValidadorExame {
+import java.util.ArrayList;
+import java.util.List;
+
+public class ValidadorHemograma extends ValidadorBase {
+
     @Override
-    public boolean validar(Exame exame) {
+    public List<String> validar(Exame exame) {
+        List<String> erros = new ArrayList<>();
+
         if (!(exame instanceof Hemograma)) {
-            return false;
+            erros.add("Exame não é do tipo Hemograma");
+            return erros;
         }
-        Hemograma hemograma = (Hemograma) exame;
-        return hemograma.getHemoglobina() > 0 && hemograma.getLeucocitos() > 0;
+
+        Hemograma h = (Hemograma) exame;
+
+        erros.addAll(validarExameBase(h));
+
+        double hmin = 12, hmax = 18;
+        if (h.getPaciente().getSexo() == Sexo.FEMININO) {
+            hmax = 16;
+        }
+        double lmin = 4000, lmax = 11000;
+
+        if (h.getHemoglobina() < hmin || h.getHemoglobina() > hmax)
+            erros.add("Hemoglobina fora da faixa normal: " + h.getHemoglobina());
+        if (h.getLeucocitos() < lmin || h.getLeucocitos() > lmax)
+            erros.add("Leucócitos fora da faixa normal: " + h.getLeucocitos());
+
+        return erros;
     }
 }
