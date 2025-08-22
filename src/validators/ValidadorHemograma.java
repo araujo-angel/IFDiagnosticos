@@ -3,6 +3,7 @@ package validators;
 import model.enums.Sexo;
 import model.exame.Exame;
 import model.exame.Hemograma;
+import model.Paciente;
 
 import java.util.ArrayList;
 import java.util.List;

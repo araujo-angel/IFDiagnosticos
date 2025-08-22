@@ -1,5 +1,6 @@
 package reports.template;
 
 public interface LaudoTemplate {
-    void gerarLaudo(String cabecalho, String corpo, String rodape, String nomeArquivo);
+    String gerarConteudo(String cabecalho, String corpo, String rodape);
+    String salvarEmArquivo(String conteudo, String nomeArquivo);
 }

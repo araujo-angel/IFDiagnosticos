@@ -1,14 +1,35 @@
 package reports.template;
 
-public class Laudotexto implements LaudoTemplate {
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
+public class LaudoTexto implements LaudoTemplate {
+
     @Override
-    public void gerarLaudo(String cabecalho, String corpo, String rodape, String nomeArquivo) {
-        System.out.println("=== [TXT] " + nomeArquivo + ".txt ===");
-        System.out.println(cabecalho);
-        System.out.println("---");
-        System.out.println(corpo);
-        System.out.println("---");
-        System.out.println(rodape);
-        System.out.println("==============================\n");
+    public String gerarConteudo(String cabecalho, String corpo, String rodape) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(cabecalho).append("\n");
+        sb.append("---\n");
+        sb.append(corpo).append("\n");
+        sb.append("---\n");
+        sb.append(rodape).append("\n");
+        return sb.toString();
+    }
+
+    @Override
+    public String salvarEmArquivo(String conteudo, String nomeArquivo) {
+        String filePath = "laudos/" + nomeArquivo + ".txt";
+        try {
+            File dir = new File("laudos");
+            if (!dir.exists()) dir.mkdirs();
+
+            FileWriter writer = new FileWriter(filePath);
+            writer.write(conteudo);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return filePath;
     }
 }
