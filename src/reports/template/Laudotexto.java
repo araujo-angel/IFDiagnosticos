@@ -17,19 +17,21 @@ public class LaudoTexto implements LaudoTemplate {
         return sb.toString();
     }
 
-    @Override
+  @Override
     public String salvarEmArquivo(String conteudo, String nomeArquivo) {
-        String filePath = "laudos/" + nomeArquivo + ".txt";
-        try {
-            File dir = new File("laudos");
-            if (!dir.exists()) dir.mkdirs();
+        // Pega a pasta Documentos do usuário
+        String userHome = System.getProperty("user.home");
+        File pasta = new File(userHome + File.separator + "Documents" + File.separator + "Laudos");
+        pasta.mkdirs();
 
-            FileWriter writer = new FileWriter(filePath);
+        String filePath = new File(pasta, nomeArquivo + ".txt").getAbsolutePath();
+
+        try (FileWriter writer = new FileWriter(filePath)) {
             writer.write(conteudo);
-            writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         return filePath;
     }
 }

@@ -21,17 +21,19 @@ public class LaudoHtml implements LaudoTemplate {
 
     @Override
     public String salvarEmArquivo(String conteudo, String nomeArquivo) {
-        String filePath = "laudos/" + nomeArquivo + ".html";
-        try {
-            File dir = new File("laudos");
-            if (!dir.exists()) dir.mkdirs();
+        // Pega a pasta Documentos do usuário
+        String userHome = System.getProperty("user.home");
+        File pasta = new File(userHome + File.separator + "Documents" + File.separator + "Laudos");
+        pasta.mkdirs();
 
-            FileWriter writer = new FileWriter(filePath);
+        String filePath = new File(pasta, nomeArquivo + ".html").getAbsolutePath();
+
+        try (FileWriter writer = new FileWriter(filePath)) {
             writer.write(conteudo);
-            writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         return filePath;
     }
 }

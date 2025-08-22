@@ -1,0 +1,7 @@
+Paciente: João Silva
+Médico: Dra. Maria
+---
+Exame: Hemograma
+Prioridade: ALTA
+---
+Data: Fri Aug 22 14:50:25 BRT 2025

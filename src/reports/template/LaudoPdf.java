@@ -3,33 +3,33 @@ package reports.template;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 
 import java.io.File;
+import java.io.IOException;
 
 public class LaudoPdf implements LaudoTemplate {
 
-    private String cabecalho;
-    private String corpo;
-    private String rodape;
-
     @Override
     public String gerarConteudo(String cabecalho, String corpo, String rodape) {
-        this.cabecalho = cabecalho;
-        this.corpo = corpo;
-        this.rodape = rodape;
-
-        // console
         return "[PDF]\n" + cabecalho + "\n---\n" + corpo + "\n---\n" + rodape;
     }
 
     @Override
     public String salvarEmArquivo(String conteudo, String nomeArquivo) {
-        String filePath = "laudos/" + nomeArquivo + ".pdf";
+        String userHome = System.getProperty("user.home");
+        File pasta = new File(userHome + File.separator + "Documents" + File.separator + "Laudos");
+        pasta.mkdirs();
+
+        String filePath = new File(pasta, nomeArquivo + ".pdf").getAbsolutePath();
+
         try (PDDocument document = new PDDocument()) {
             PDPage page = new PDPage();
             document.addPage(page);
 
             PDPageContentStream contentStream = new PDPageContentStream(document, page);
+            contentStream.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
             contentStream.beginText();
             contentStream.setLeading(14.5f);
             contentStream.newLineAtOffset(50, 700);
@@ -41,11 +41,13 @@ public class LaudoPdf implements LaudoTemplate {
 
             contentStream.endText();
             contentStream.close();
+            document.save(filePath);
 
-            document.save(new File(filePath));
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
+
         return filePath;
     }
+
 }

@@ -11,14 +11,6 @@ public class GeradorLaudo {
     }
 
     public String gerar(String cabecalho, String corpo, String rodape, String nomeArquivo, boolean printConsole) {
-        String conteudo = template.gerarConteudo(cabecalho, corpo, rodape);
-
-        if (printConsole) {
-            System.out.println("=== Laudo (" + nomeArquivo + ") ===");
-            System.out.println(conteudo);
-            System.out.println("==============================\n");
-        }
-
-        return template.salvarEmArquivo(conteudo, nomeArquivo);
+        return template.gerar(cabecalho, corpo, rodape, nomeArquivo, printConsole);
     }
 }
