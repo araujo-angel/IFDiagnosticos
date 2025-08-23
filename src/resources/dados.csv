@@ -1,0 +1,4 @@
+"hemograma,H123,120.0,1692818400000,ALTA,João Silva,12345678900,joao.silva@gmail.com,MASCULINO,IDOSO,true,Dra. Maria,CRM-12345"
+"ressonancia,R456,350.0,1692818400000,BAIXA,Carlos Souza,98765432100,carlos.souza@gmail.com,MASCULINO,ADULTO,false,Dra. Maria,CRM-12345"
+"hemograma,H789,150.0,1692904800000,MEDIA,Ana Pereira,11223344556,ana.pereira@gmail.com,FEMININO,ADULTO,true,Dr. João,CRM-67890"
+"ressonancia,R999,500.0,1692991200000,ALTA,Mariana Lima,99887766554,mariana.lima@gmail.com,FEMININO,IDOSO,false,Dr. Paulo,CRM-54321"

@@ -19,5 +19,10 @@ public class EmailNotifier implements NotificadorObserver {
         System.out.println("Mensagem: O exame " + exame.getCodigo() + " do paciente " 
                            + exame.getPaciente().getNome() + " foi processado e o laudo esta pronto.");
     }
+
+    public void notificar(String mensagem) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'notificar'");
+    }
 }
 

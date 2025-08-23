@@ -18,12 +18,11 @@ public abstract class Laudo {
     public void gerar(Exame exame, Medico medico) {
         String nomeArquivo = gerarNomeArquivo(exame.getPaciente(), exame);
         String cabecalho = getCabecalho(exame);
-        String corpo = gerarCorpo(exame); // <- cada subclasse implementa
+        String corpo = gerarCorpo(exame); // implementado por cada subclasse
         String rodape = "Medico Responsável: " + medico.getNome() + " (" + medico.getCrm() + ")";
-        modelo.gerarLaudo(cabecalho, corpo, rodape, nomeArquivo);
+        modelo.gerar(cabecalho, corpo, rodape, nomeArquivo, true);
     }
 
-    // obrigatório na subclasse
     protected abstract String gerarCorpo(Exame exame);
 
     protected String gerarNomeArquivo(Paciente paciente, Exame exame) {
@@ -34,10 +33,31 @@ public abstract class Laudo {
 
     protected String getCabecalho(Exame exame) {
         Paciente paciente = exame.getPaciente();
-        return "Exame Nº: " + exame.getCodigo() + "\n" +
-               "Paciente: " + paciente.getNome() + "\n" +
-               "Convenio: " + paciente.getConvenio() + "\n" +
-               "Medico Solicitante: " + exame.getMedico().getNome() + "\n" +
-               "Data: " + exame.getDataSolicitacao();
+        return "============================================\n" +
+               "IF DIAGNOSTICOS - LAUDO MÉDICO\n" +
+               "============================================\n" +
+               "Exame: " + getNomeExame() + "\n" +
+               "Código do Exame: " + exame.getCodigo() + "\n" +
+               "Data do Exame: " + exame.getDataSolicitacao() + "\n" +
+               "------------------------------------------------------------\n" +
+               "PACIENTE: " + paciente.getNome() + "\n" +
+               "Idade: " + paciente.getIdade() + " anos | Sexo: " + paciente.getSexo() + "\n" +
+               "Convênio: " + paciente.getConvenio() + "\n" +
+               "Médico Solicitante: " + exame.getMedico().getNome() + "\n" +
+               "============================================\n";
     }
+
+    protected String getRodape(Medico medicoResponsavel) {
+        return "\n============================================\n" +
+               "CONCLUSÃO:\n" +
+               "------------------------------------------------------------\n" +
+               "Exame realizado dentro dos parâmetros de normalidade.\n" +
+               "============================================\n" +
+               "Médico Responsável: " + medicoResponsavel.getNome() + "\n" +
+               "CRM: " + medicoResponsavel.getCrm() + "\n" +
+               "Data de Emissão: " + LocalDate.now() + "\n" +
+               "============================================\n";
+    }
+
+    protected abstract String getNomeExame();
 }

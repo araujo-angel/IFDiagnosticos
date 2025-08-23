@@ -25,17 +25,13 @@ public class ValidadorRessonancia extends ValidadorBase {
 
         Ressonancia r = (Ressonancia) exame;
 
-        // Validar atributos base
         erros.addAll(validarExameBase(r));
-
-        // Área do corpo
         if (r.getAreaCorpo() == null || r.getAreaCorpo().isBlank()) {
             erros.add("Área do corpo nao pode ser vazia");
         } else if (!areasValidas.contains(r.getAreaCorpo().toLowerCase())) {
             erros.add("Area do corpo invalida: " + r.getAreaCorpo());
         }
 
-        // Contraste
         if (r.getComContraste() && r.getPaciente().getFaixaEtaria() == FaixaEtaria.CRIANCA) {
             erros.add("Pacientes criancas nao podem fazer ressonancia com contraste");
         }

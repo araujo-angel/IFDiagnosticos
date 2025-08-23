@@ -13,41 +13,47 @@ public class LaudoPdf implements LaudoTemplate {
 
     @Override
     public String gerarConteudo(String cabecalho, String corpo, String rodape) {
-        return "[PDF]\n" + cabecalho + "\n---\n" + corpo + "\n---\n" + rodape;
+        StringBuilder conteudo = new StringBuilder();
+        conteudo.append(cabecalho).append("\n\n");
+        conteudo.append(corpo).append("\n\n");
+        conteudo.append(rodape);
+        return conteudo.toString();
     }
 
-    @Override
+   @Override
     public String salvarEmArquivo(String conteudo, String nomeArquivo) {
-        String userHome = System.getProperty("user.home");
-        File pasta = new File(userHome + File.separator + "Documents" + File.separator + "Laudos");
-        pasta.mkdirs();
-
-        String filePath = new File(pasta, nomeArquivo + ".pdf").getAbsolutePath();
-
         try (PDDocument document = new PDDocument()) {
             PDPage page = new PDPage();
             document.addPage(page);
-
+            
             PDPageContentStream contentStream = new PDPageContentStream(document, page);
-            contentStream.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
+            contentStream.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD), 12);
+    
+            String[] lines = conteudo.split("\n");
             contentStream.beginText();
             contentStream.setLeading(14.5f);
             contentStream.newLineAtOffset(50, 700);
-
-            for (String line : conteudo.split("\n")) {
+            
+            for (String line : lines) {
+                if (line.contains("=====") || line.contains("-----")) {
+                    contentStream.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD), 12);
+                } else {
+                    contentStream.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
+                }
                 contentStream.showText(line);
                 contentStream.newLine();
             }
-
+            
             contentStream.endText();
             contentStream.close();
-            document.save(filePath);
 
+            String filePath = System.getProperty("user.home") + "/Documents/Laudos/" + nomeArquivo + ".pdf";
+            document.save(filePath);
+            return filePath;
+            
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
-
-        return filePath;
     }
-
 }
