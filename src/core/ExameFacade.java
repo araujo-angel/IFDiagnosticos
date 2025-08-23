@@ -1,4 +1,5 @@
 package core;
+
 import java.util.Date;
 
 import factories.ExameFactoryRegistry;
@@ -7,13 +8,12 @@ import model.Medico;
 import model.Paciente;
 import model.enums.Prioridade;
 import model.exame.Exame;
+import payments.DescontoConvenio;
 import payments.DescontoStrategy;
 import payments.ProcessadorPagamento;
 
+public class ExameFacade {
 
-public class SistemaDiagnosticosFacade {
-
-    // Agendar exame
     public Exame agendarExame(String tipoExame, String codigo, double valorBase,
                               Date dataSolicitacao, Prioridade prioridade,
                               Paciente paciente, Medico medico) {
@@ -27,20 +27,11 @@ public class SistemaDiagnosticosFacade {
         return exame;
     }
 
-    // Processar exame
-    public void processarExame(Exame exame) {
-        exame.avancarEstado(); // solicitado -> processando
-        exame.avancarEstado(); // processando -> concluído
-    }
+    public void pagarExame(Exame exame) {
+        DescontoStrategy desconto = exame.getPaciente().getConvenio()
+                ? new DescontoConvenio()
+                : (valor) -> valor;
 
-    // Pagar exame
-    public void pagarExame(Exame exame, DescontoStrategy estrategia) {
-        ProcessadorPagamento processador = new ProcessadorPagamento(exame, estrategia);
-        processador.processarPagamento();
-    } /* 
-    //Gerar laudo
-    public String gerarLaudo(Exame exame, String formato) {
-        GeradorLaudo gerador = new GeradorLaudo();
-        return gerador.gerarLaudo(exame, formato).gerarLaudoCompleto();
-    }*/
+        new ProcessadorPagamento(exame, desconto).processarPagamento();
+    }
 }

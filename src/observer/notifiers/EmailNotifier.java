@@ -19,5 +19,13 @@ public class EmailNotifier implements NotificadorObserver {
         System.out.println("Mensagem: O exame " + exame.getCodigo() + " do paciente " 
                            + exame.getPaciente().getNome() + " foi processado e o laudo esta pronto.");
     }
+
+    public void notificar(String mensagem) {
+        // Simulação de envio de email
+        System.out.println("=== EMAIL NOTIFICATION ===");
+        System.out.println("Para: ");
+        System.out.println("Mensagem: " + mensagem);
+        System.out.println("==========================");
+    }
 }
 

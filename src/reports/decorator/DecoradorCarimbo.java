@@ -1,7 +1,6 @@
 package reports.decorator;
 
 import reports.template.LaudoTemplate;
-
 public class DecoradorCarimbo extends DecoradorLaudo {
 
     public DecoradorCarimbo(LaudoTemplate laudo) {
@@ -9,8 +8,13 @@ public class DecoradorCarimbo extends DecoradorLaudo {
     }
 
     @Override
-    public void gerarLaudo(String cabecalho, String corpo, String rodape, String nomeArquivo) {
+    public String gerarConteudo(String cabecalho, String corpo, String rodape) {
         String rodapeComCarimbo = rodape + "\nCarimbo digital: IF Diagnosticos";
-        laudo.gerarLaudo(cabecalho, corpo, rodapeComCarimbo, nomeArquivo);
+        return laudo.gerarConteudo(cabecalho, corpo, rodapeComCarimbo);
+    }
+
+    @Override
+    public String salvarEmArquivo(String conteudo, String nomeArquivo) {
+        return laudo.salvarEmArquivo(conteudo, nomeArquivo);
     }
 }

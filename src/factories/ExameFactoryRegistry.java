@@ -8,7 +8,7 @@ public class ExameFactoryRegistry {
     public static void registerFactory(String key, FabricaExame factory) {
         registry.put(key.toLowerCase(), factory);
     }
-
+    
     public static FabricaExame getFactory(String key) {
         return registry.get(key.toLowerCase());
     }
