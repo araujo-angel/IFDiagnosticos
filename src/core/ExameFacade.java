@@ -16,11 +16,11 @@ import payments.ProcessadorPagamento;
 
 public class ExameFacade {
 
-    public ExameFacade() {
+    static {
         ExameFactoryRegistry.registerFactory("hemograma", new FabricaHemograma());
         ExameFactoryRegistry.registerFactory("ressonancia", new FabricaRessonancia());
     }
-
+    
     public Exame agendarExame(String tipoExame, String codigo, double valorBase,
                               Date dataSolicitacao, Prioridade prioridade,
                               Paciente paciente, Medico medico) {
