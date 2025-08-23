@@ -23,7 +23,7 @@ public abstract class Laudo {
         modelo.gerar(cabecalho, corpo, rodape, nomeArquivo, true);
     }
 
-    protected abstract String gerarCorpo(Exame exame);
+    public abstract String gerarCorpo(Exame exame);
 
     protected String gerarNomeArquivo(Paciente paciente, Exame exame) {
         String nome = paciente.getNome().toLowerCase().replace(" ", "_");

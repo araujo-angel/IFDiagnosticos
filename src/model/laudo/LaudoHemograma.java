@@ -18,7 +18,7 @@ public class LaudoHemograma extends Laudo {
     }
 
     @Override
-    protected String gerarCorpo(Exame exame) {
+    public String gerarCorpo(Exame exame) {
         if (!(exame instanceof Hemograma)) {
             throw new IllegalArgumentException("Esse Exame nao e um Hemograma!");
         }

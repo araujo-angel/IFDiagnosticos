@@ -13,7 +13,7 @@ public class LaudoRessonancia extends Laudo {
     }
 
     @Override
-    protected String gerarCorpo(Exame exame) {
+    public String gerarCorpo(Exame exame) {
         if (!(exame instanceof Ressonancia)) {
             throw new IllegalArgumentException("Exame nao e Ressonancia!");
         }
