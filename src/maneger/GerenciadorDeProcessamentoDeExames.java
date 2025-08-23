@@ -1,10 +1,11 @@
 package maneger;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
 
 import model.exame.Exame;
-import observer.NotificadorObserver;
+import notifier.NotificadorObserver;
 
 public class GerenciadorDeProcessamentoDeExames {
 
@@ -12,7 +13,6 @@ public class GerenciadorDeProcessamentoDeExames {
     private List<NotificadorObserver> notificadores;
 
     public GerenciadorDeProcessamentoDeExames() {
-        // PriorityQueue exige um comparador — vamos usar a prioridade do exame
         this.filaExames = new PriorityQueue<>(
             (e1, e2) -> e1.getPrioridade().compareTo(e2.getPrioridade())
         );
@@ -23,30 +23,27 @@ public class GerenciadorDeProcessamentoDeExames {
         notificadores.add(notificador);
     }
 
+    public List<NotificadorObserver> getNotificadores() {
+        return notificadores;
+    }
+
     public void adicionarExame(Exame exame) {
         filaExames.add(exame);
     }
 
-
     public Exame processarProximoExame() {
         Exame exame = filaExames.poll();
         if (exame != null) {
-            exame.avancarEstado(); // solicitado -> processando
-            exame.avancarEstado(); // processando -> concluído
-            marcarExameComoPronto(exame);
+            exame.avancarEstado(); // Solicitação -> Processando
+            exame.avancarEstado(); // Processando -> Concluído
         }
         return exame;
     }
 
-    public void marcarExameComoPronto(Exame exame) {
-        // Aqui poderíamos integrar com GeradorLaudo
-        notificarLaudoPronto(exame);
-    }
 
-    public void notificarLaudoPronto(Exame exame) {
+    public void notificarLaudoPronto(Exame exame, String caminhoLaudo) {
         for (NotificadorObserver notificador : notificadores) {
-            notificador.atualizar(exame);
+            notificador.atualizar(exame, caminhoLaudo);
         }
     }
 }
-

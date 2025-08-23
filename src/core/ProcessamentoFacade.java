@@ -2,7 +2,6 @@ package core;
 
 import maneger.GerenciadorDeProcessamentoDeExames;
 import model.exame.Exame;
-import observer.notifiers.EmailNotifier;
 import validators.ValidadorExame;
 import validators.ValidadorFactory;
 
@@ -17,18 +16,28 @@ public class ProcessamentoFacade {
     }
 
     public void enfileirarExame(Exame exame) {
-        gerenciador.adicionarNotificador(new EmailNotifier(exame.getPaciente().getEmail()));
         gerenciador.adicionarExame(exame);
+    }
+
+    public void adicionarNotificadorGenerico() {
+        if (gerenciador.getNotificadores().isEmpty()) {
+            gerenciador.adicionarNotificador(new notifier.NotificadorEmail());
+        }
     }
 
     public void processarExames(Consumer<Exame> callback) {
         while (true) {
             Exame processado = gerenciador.processarProximoExame();
             if (processado == null) break;
+
             ValidadorExame validador = ValidadorFactory.criarValidador(processado);
             System.out.println("Validação: " + validador.validar(processado));
 
             callback.accept(processado);
         }
+    }
+
+    public GerenciadorDeProcessamentoDeExames getGerenciador() {
+        return gerenciador;
     }
 }

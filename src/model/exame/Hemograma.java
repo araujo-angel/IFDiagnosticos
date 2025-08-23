@@ -7,44 +7,44 @@ import model.Paciente;
 import model.enums.Prioridade;
 
 public class Hemograma extends Exame {
-    private double hemoglobina;
-    private double leucocitos;
-    private double hematocrito;
-    private int plaquetas;
+    private Double hemoglobina;
+    private Double leucocitos;
+    private Double hematocrito;
+    private Double plaquetas;
 
     public Hemograma(String codigo, double valorBase, Date dataSolicitacao, Prioridade prioridade, Paciente paciente, Medico medico) {
         super(codigo, valorBase, dataSolicitacao, prioridade, paciente, medico);
         
     }
     
-    public void setHemoglobina(double hemoglobina) {
+    public void setHemoglobina(Double hemoglobina) {
         this.hemoglobina = hemoglobina;
     }
 
-    public double getHemoglobina() {
+    public Double getHemoglobina() {
         return hemoglobina;
     }
 
-    public void setHematocrito(double hematocrito) {
+    public void setHematocrito(Double hematocrito) {
         this.hematocrito = hematocrito;
     }
 
-    public double getHematocrito() {
+    public Double getHematocrito() {
         return hematocrito;
     }
     
-    public void setLeucocitos(double leucocitos) {
+    public void setLeucocitos(Double leucocitos) {
         this.leucocitos = leucocitos;
     }
 
-    public double getLeucocitos() {
+    public Double getLeucocitos() {
         return leucocitos;
     }
-    public void setPlaquetas(int plaquetas) {
+    public void setPlaquetas(Double plaquetas) {
         this.plaquetas = plaquetas;
     }
 
-    public double getPlaquetas() {
+    public Double getPlaquetas() {
         return plaquetas;
     }
 }

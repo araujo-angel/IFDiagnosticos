@@ -1,6 +1,7 @@
 package model.exame;
 
 import java.util.Date;
+import java.util.UUID;
 
 import model.Medico;
 import model.Paciente;
@@ -17,10 +18,13 @@ public abstract class Exame {
     private Medico medico;
     private StatusExameState estado;
     //private LaudoTemplate laudo;
+    private String caminhoLaudo;
+
+
 
 
     public Exame(String codigo, double valorBase, Date dataSolicitacao, Prioridade prioridade, Paciente paciente, Medico medico) {//, LaudoTemplate laudo) {
-        this.codigo = codigo;
+        this.codigo = setCodigoUnico();
         this.valorBase = valorBase;
         this.dataSolicitacao = dataSolicitacao;
         this.prioridade = prioridade;
@@ -31,11 +35,14 @@ public abstract class Exame {
     }
 
     public String getCodigo() {
+        if (codigo == null || codigo.isEmpty()) {
+            codigo = setCodigoUnico();
+        }
         return codigo;
     }
 
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
+    private String setCodigoUnico() {
+        return "EX-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 
     public double getValorBase() {
@@ -76,6 +83,14 @@ public abstract class Exame {
 
     public void setMedico(Medico medico) {
         this.medico = medico;
+    }
+
+    public String getCaminhoLaudo() { 
+        return caminhoLaudo; 
+    }
+
+    public void setCaminhoLaudo(String caminho) { 
+        this.caminhoLaudo = caminho; 
     }
 
     public StatusExameState getEstado() {

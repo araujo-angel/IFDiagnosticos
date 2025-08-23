@@ -69,15 +69,19 @@ public class CargaDadosFacade {
             String nomeMedico = campos[11].trim();
             String crm = campos[12].trim();
             Medico medico = new Medico(nomeMedico, crm);
+            
 
             Exame exame = exameFacade.agendarExame(tipoExame, codigo, valorBase, dataSolicitacao, prioridade, paciente, medico);
+            if (exame.getCodigo() == null || exame.getCodigo().isEmpty()) {
+                exame.getCodigo(); 
+            }
 
             if (exame instanceof Hemograma) {
                 Hemograma h = (Hemograma) exame;
                 h.setHemoglobina(Double.parseDouble(campos[13].trim()));
                 h.setLeucocitos(Double.parseDouble(campos[14].trim()));
                 h.setHematocrito(Double.parseDouble(campos[15].trim()));
-                h.setPlaquetas(Integer.parseInt(campos[16].trim()));
+                h.setPlaquetas(Double.parseDouble(campos[16].trim()));
             } else if (exame instanceof Ressonancia) {
                 Ressonancia r = (Ressonancia) exame;
                 r.setAreaCorpo(campos[13].trim());

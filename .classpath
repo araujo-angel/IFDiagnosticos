@@ -6,6 +6,8 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Angelica/Downloads/pdfbox-app-3.0.5.jar"/>
+	<classpathentry kind="lib" path="C:/Users/anand/Downloads/pdfbox-app-3.0.5.jar"/>
+	<classpathentry kind="lib" path="C:/Users/anand/Downloads/jakarta.mail-2.0.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/anand/Downloads/jakarta.activation-2.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
