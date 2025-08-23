@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.List;
 
 import factories.ExameFactoryRegistry;
+import factories.FabricaHemograma;
+import factories.FabricaRessonancia;
 import model.Medico;
 import model.Paciente;
 import model.enums.FaixaEtaria;
@@ -17,6 +19,17 @@ import model.exame.Exame;
 
 public class CargaDadosFacade {
 
+    private final ExameFacade exameFacade;
+
+    public CargaDadosFacade() {
+        this.exameFacade = new ExameFacade();
+    }
+
+    static {
+        ExameFactoryRegistry.registerFactory("hemograma", new FabricaHemograma());
+        ExameFactoryRegistry.registerFactory("ressonancia", new FabricaRessonancia());
+    }
+
     public List<Exame> carregarDados(String caminhoCsv) {
         List<Exame> exames = new ArrayList<>();
 
@@ -25,31 +38,42 @@ public class CargaDadosFacade {
             while ((linha = br.readLine()) != null) {
                 if (linha.trim().isEmpty()) continue;
 
+                if (linha.startsWith("\"") && linha.endsWith("\"")) {
+                    linha = linha.substring(1, linha.length() - 1);
+                }
+
                 String[] campos = linha.split(",");
 
-                String tipoExame = campos[0];
-                String codigo = campos[1];
-                double valorBase = Double.parseDouble(campos[2]);
-                Date dataSolicitacao = new Date(Long.parseLong(campos[3]));
-                Prioridade prioridade = Prioridade.valueOf(campos[4]);
+                if (campos.length < 13) {
+                    System.err.println("Linha inválida: " + linha);
+                    continue;
+                }
 
-                String nomePaciente = campos[5];
-                String cpf = campos[6];
-                String email = campos[7];
-                Sexo sexo = Sexo.valueOf(campos[8]);
-                FaixaEtaria faixaEtaria = FaixaEtaria.valueOf(campos[9]);
-                boolean temConvenio = Boolean.parseBoolean(campos[10]);
+                String tipoExame = campos[0].trim().toLowerCase();
+                String codigo = campos[1].trim();
+                double valorBase = Double.parseDouble(campos[2].trim());
+                Date dataSolicitacao = new Date(Long.parseLong(campos[3].trim()));
+                Prioridade prioridade = Prioridade.valueOf(campos[4].trim().toUpperCase());
+
+                String nomePaciente = campos[5].trim();
+                String cpf = campos[6].trim();
+                String email = campos[7].trim();
+                Sexo sexo = Sexo.valueOf(campos[8].trim().toUpperCase());
+                FaixaEtaria faixaEtaria = FaixaEtaria.valueOf(campos[9].trim().toUpperCase());
+                boolean temConvenio = Boolean.parseBoolean(campos[10].trim());
 
                 Paciente paciente = new Paciente(nomePaciente, cpf, new Date(), email, sexo, faixaEtaria, temConvenio);
 
-                String nomeMedico = campos[11];
-                String crm = campos[12];
+                String nomeMedico = campos[11].trim();
+                String crm = campos[12].trim();
                 Medico medico = new Medico(nomeMedico, crm);
 
-                exames.add(
-                    ExameFactoryRegistry.getFactory(tipoExame)
-                        .criarExame(codigo, valorBase, dataSolicitacao, prioridade, paciente, medico)
+                Exame exame = exameFacade.agendarExame(
+                    tipoExame, codigo, valorBase, dataSolicitacao, 
+                    prioridade, paciente, medico
                 );
+                
+                exames.add(exame);
             }
         } catch (IOException e) {
             e.printStackTrace();

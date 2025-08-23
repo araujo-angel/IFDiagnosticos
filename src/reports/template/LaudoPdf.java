@@ -47,9 +47,15 @@ public class LaudoPdf implements LaudoTemplate {
             contentStream.endText();
             contentStream.close();
 
-            String filePath = System.getProperty("user.home") + "/Documents/Laudos/" + nomeArquivo + ".pdf";
-            document.save(filePath);
-            return filePath;
+            String dirPath = System.getProperty("user.home") + "/Documents/Laudos/";
+            File directory = new File(dirPath);
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+
+            File arquivo = new File(directory, nomeArquivo + ".pdf"); 
+            document.save(arquivo);
+            return "";
             
         } catch (IOException e) {
             e.printStackTrace();

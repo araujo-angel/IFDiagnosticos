@@ -21,8 +21,11 @@ public class EmailNotifier implements NotificadorObserver {
     }
 
     public void notificar(String mensagem) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'notificar'");
+        // Simulação de envio de email
+        System.out.println("=== EMAIL NOTIFICATION ===");
+        System.out.println("Para: ");
+        System.out.println("Mensagem: " + mensagem);
+        System.out.println("==========================");
     }
 }
 

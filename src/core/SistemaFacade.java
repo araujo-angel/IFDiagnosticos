@@ -5,6 +5,7 @@ import java.util.List;
 import model.exame.Exame;
 
 public class SistemaFacade {
+    
     private CargaDadosFacade carga = new CargaDadosFacade();
     private ExameFacade exameFacade = new ExameFacade();
     private ProcessamentoFacade procFacade = new ProcessamentoFacade();
@@ -21,10 +22,14 @@ public class SistemaFacade {
     }
 
     private void processarExame(Exame exameProcessado) {
-        String caminhoLaudo = laudoFacade.gerarLaudo(exameProcessado, "pdf", true);
-        String msg = "Olá " + exameProcessado.getPaciente().getNome() +
-                    ", seu laudo (" + exameProcessado.getCodigo() + 
-                    ") já está disponível em: " + caminhoLaudo;
-        notificacaoFacade.notificarPaciente(exameProcessado, msg);
+        try {
+            String caminhoLaudo = laudoFacade.gerarLaudo(exameProcessado, "pdf", true);
+            String msg = "Olá " + exameProcessado.getPaciente().getNome() +
+                        ", seu laudo (" + exameProcessado.getCodigo() + 
+                        ") já está disponível em: " + caminhoLaudo;
+            notificacaoFacade.notificarPaciente(exameProcessado, msg);
+        } catch (Exception e) {
+            System.err.println("Erro ao processar exame " + exameProcessado.getCodigo() + ": " + e.getMessage());
+        }
     }
 }
