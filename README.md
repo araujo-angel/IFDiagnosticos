@@ -194,7 +194,7 @@ src/
 │   └── ExameCancelado.java
 ├── reports/
 │   ├── GeradorLaudo.java
-
+```
 Como Executar
 Pré-requisitos
 Java JDK 11 ou superior
