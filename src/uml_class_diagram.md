@@ -2,237 +2,404 @@
 config:
   theme: neo-dark
 ---
-
 classDiagram
-    %% =========================
-    %% SISTEMA PRINCIPAL
-    %% =========================
-    class SistemaDiagnosticos {
-        +main(args: String[]): void
-    }
+direction TB
+%% =========================
+%% SISTEMA PRINCIPAL
+%% =========================
+class SistemaDiagnosticos {
+    +main(args: String[]): void
+}
+class SistemaFacade {
+    -carga: CargaDadosFacade
+    -exameFacade: ExameFacade
+    -procFacade: ProcessamentoFacade
+    -notificadores: NotificadorFacade
+    -laudoFacade: LaudoFacade
+    +executarFluxo(caminhoCsv: String): void
+    -processarExame(exameProcessado: Exame): void
+}
 
-    class SistemaDiagnosticosFacade {
-        +agendarExame(fabrica: FabricaExame, paciente: Paciente, medico: Medico): Exame
-        +processarExame(exame: Exame): void
-        +pagarExame(exame: Exame, estrategia: DescontoStrategy): void
-        +gerarLaudo(exame: Exame, formato: String): String
-    }
+SistemaDiagnosticos --> SistemaFacade
+%% =========================
+%% FACHADAS ESPECIALIZADAS
+%% =========================
 
-    %% =========================
-    %% ENTIDADES
-    %% =========================
-    class Paciente {
-        -nome: String
-        -cpf: String
-        -dataNascimento: Date
-        -temConvenio: boolean
-        -exames: List~Exame~
-        +getIdade(): int
-        +adicionarExame(exame: Exame): void
-    }
+class CargaDadosFacade {
+    -exameFacade: ExameFacade
+    +carregarDados(caminhoCsv: String): List~Exame~
+}
+class ExameFacade {
+    +agendarExame(tipoExame: String, codigo: String, valorBase: double, dataSolicitacao: Date, prioridade: Prioridade, paciente: Paciente, medico: Medico): Exame
+    +pagarExame(exame: Exame): void
+}
+class LaudoFacade {
+    -notificadores: NotificadorFacade
+    +gerarLaudo(exame: Exame, formato: String, printConsole: boolean): String
+}
+class NotificadorFacade {
+    -notificadores: List~NotificadorObserver~
+    +notificarPaciente(exame: Exame, caminhoLaudo: String): void
+    +adicionarNotificador(notificador: NotificadorObserver): void
+}
+class ProcessamentoFacade {
+    -gerenciador: GerenciadorDeProcessamentoDeExames
+    +enfileirarExame(exame: Exame): void
+    +adicionarNotificadorGenerico(): void
+    +processarExames(callback: Consumer~Exame~): void
+    +getGerenciador(): GerenciadorDeProcessamentoDeExames
+}
+SistemaFacade --> CargaDadosFacade
+SistemaFacade --> ExameFacade
+SistemaFacade --> ProcessamentoFacade
+SistemaFacade --> NotificadorFacade
+SistemaFacade --> LaudoFacade
+%% =========================
+%% ENTIDADES PRINCIPAIS
+%% =========================
 
-    class Medico {
-        -nome: String
-        -CRM: String
-        +solicitarExame(paciente: Paciente, tipoExame: String): Exame
-    }
+class Paciente {
+    -nome: String
+    -cpf: String
+    -dataNascimento: Date
+    -email: String
+    -sexo: Sexo
+    -faixaEtaria: FaixaEtaria
+    -temConvenio: boolean
+    -exames: List~Exame~
+    +getIdade(): int
+    +adicionarExame(exame: Exame): void
+    +getConvenio(): boolean
+}
+class Medico {
+    -nome: String
+    -CRM: String
+    +solicitarExame(paciente: Paciente, tipoExame: String, fabrica: FabricaExame): Exame
+}
+class Exame {
+    <<abstract>>
+    -codigo: String
+    -valorBase: double
+    -dataSolicitacao: Date
+    -prioridade: Prioridade
+    -paciente: Paciente
+    -medico: Medico
+    -estado: StatusExameState
+    -caminhoLaudo: String
+    +getCodigo(): String
+    +getValorBase(): double
+    +getDataSolicitacao(): Date
+    +getPrioridade(): Prioridade
+    +getPaciente(): Paciente
+    +getMedico(): Medico
+    +getCaminhoLaudo(): String
+    +getEstado(): StatusExameState
+    +setEstado(estado: StatusExameState): void
+    +avancarEstado(): void
+    +cancelarExame(): void
+}
+Paciente "1" *-- "*" Exame
+Medico "1" -- "*" Exame
 
-    %% =========================
-    %% EXAMES E ESTADOS
-    %% =========================
-    class Exame {
-        <<abstract>>
-        -codigo: String
-        -valorBase: double
-        -dataSolicitacao: Date
-        -prioridade: Prioridade
-        -paciente: Paciente
-        -medico: Medico
-        -estado: StatusExameState
-        -laudo: LaudoTemplate
-        +getEstado(): String
-        +avancarEstado(): void
-    }
+%% =========================
+%% ENUMERAÇÕES
+%% =========================
 
-    class Prioridade {
-        <<enumeration>>
-        +ALTA
-        +MEDIA
-        +BAIXA
-    }
+class Prioridade {
+    <<enumeration>>
+    +ALTA
+    +MEDIA
+    +BAIXA
+}
+class Sexo {
+    <<enumeration>>
+    +MASCULINO
+    +FEMININO
+}
+class FaixaEtaria {
+    <<enumeration>>
+    +CRIANCA
+    +ADULTO
+    +IDOSO
+}
+Exame --> Prioridade
+Paciente --> Sexo
+Paciente --> FaixaEtaria
 
-    class StatusExameState {
-        <<interface>>
-        +mudarEstado(exame: Exame): void
-    }
+%% =========================
+%% TIPOS DE EXAME
+%% =========================
 
-    class ExamePendente { +mudarEstado(exame: Exame): void }
-    class ExameProcessando { +mudarEstado(exame: Exame): void }
-    class ExameConcluido { +mudarEstado(exame: Exame): void }
-    class ExameCancelado { +mudarEstado(exame: Exame): void }
+class Hemograma {
+    -hemoglobina: Double
+    -leucocitos: Double
+    -hematocrito: Double
+    -plaquetas: Double
+    +getHemoglobina(): Double
+    +setHemoglobina(hemoglobina: Double): void
+    +getLeucocitos(): Double
+    +setLeucocitos(leucocitos: Double): void
+    +getHematocrito(): Double
+    +setHematocrito(hematocrito: Double): void
+    +getPlaquetas(): Double
+    +setPlaquetas(plaquetas: Double): void
+}
+class Ressonancia {
+    -areaCorpo: String
+    -comContraste: boolean
+    +getAreaCorpo(): String
+    +setAreaCorpo(areaCorpo: String): void
+    +getComContraste(): boolean
+    +setComContraste(comContraste: boolean): void
+}
+Exame <|-- Hemograma
+Exame <|-- Ressonancia
 
-    class Hemograma {
-        -hemoglobina: double
-        -leucocitos: double
-    }
+%% =========================
+%% PADRÃO STATE
+%% =========================
 
-    class Ressonancia {
-        -areaCorpo: String
-        -comContraste: boolean
-    }
+class StatusExameState {
+    <<interface>>
+    +mudarEstadoExame(exame: Exame): void
+    +cancelarExame(exame: Exame): void
+}
+class ExameSolicitado {
+    +mudarEstadoExame(exame: Exame): void
+    +cancelarExame(exame: Exame): void
+}
+class ExameProcessando {
+    +mudarEstadoExame(exame: Exame): void
+    +cancelarExame(exame: Exame): void
+}
+class ExameConcluido {
+    +mudarEstadoExame(exame: Exame): void
+    +cancelarExame(exame: Exame): void
+}
+class ExameCancelado {
+    +mudarEstadoExame(exame: Exame): void
+    +cancelarExame(exame: Exame): void
+}
+Exame --> StatusExameState
+StatusExameState <|.. ExameSolicitado
+StatusExameState <|.. ExameProcessando
+StatusExameState <|.. ExameConcluido
+StatusExameState <|.. ExameCancelado
 
-    %% =========================
-    %% FACTORY
-    %% =========================
-    class FabricaExame {
-        <<interface>>
-        +criarExame(): Exame
-    }
+%% =========================
+%% PADRÃO FACTORY
+%% =========================
+class FabricaExame {
+    <<interface>>
+    +criarExame(codigo: String, valorBase: double, dataSolicitacao: Date, prioridade: Prioridade, paciente: Paciente, medico: Medico): Exame
+}
+class FabricaHemograma {
+    +criarExame(codigo: String, valorBase: double, dataSolicitacao: Date, prioridade: Prioridade, paciente: Paciente, medico: Medico): Exame
+}
+class FabricaRessonancia {
+    +criarExame(codigo: String, valorBase: double, dataSolicitacao: Date, prioridade: Prioridade, paciente: Paciente, medico: Medico): Exame
+}
+class ExameFactoryRegistry {
+    -registry: Map~String, FabricaExame~
+    +registerFactory(key: String, factory: FabricaExame): void
+    +getFactory(key: String): FabricaExame
+}
+FabricaExame <|.. FabricaHemograma
+FabricaExame <|.. FabricaRessonancia
+ExameFacade --> ExameFactoryRegistry
+ExameFactoryRegistry --> FabricaExame
 
-    class FabricaHemograma { +criarExame(): Exame }
-    class FabricaRessonancia { +criarExame(): Exame }
+%% =========================
+%% PADRÃO TEMPLATE METHOD
+%% =========================
+class LaudoTemplate {
+    <<interface>>
+    +gerarConteudo(cabecalho: String, corpo: String, rodape: String): String
+    +salvarEmArquivo(conteudo: String, nomeArquivo: String): String
+    +gerar(cabecalho: String, corpo: String, rodape: String, nomeArquivo: String, printConsole: boolean): String
+}
+class LaudoTexto {
+    +gerarConteudo(cabecalho: String, corpo: String, rodape: String): String
+    +salvarEmArquivo(conteudo: String, nomeArquivo: String): String
+}
+class LaudoHtml {
+    +gerarConteudo(cabecalho: String, corpo: String, rodape: String): String
+    +salvarEmArquivo(conteudo: String, nomeArquivo: String): String
+}
+class LaudoPdf {
+    +gerarConteudo(cabecalho: String, corpo: String, rodape: String): String
+    +salvarEmArquivo(conteudo: String, nomeArquivo: String): String
+}
+class LaudoFactoryRegistry {
+    -registry: Map~String, LaudoTemplate~
+    +getTemplate(key: String): LaudoTemplate
+    +registerTemplate(key: String, template: LaudoTemplate): void
+}
+class GeradorLaudo {
+    -template: LaudoTemplate
+    +gerar(cabecalho: String, corpo: String, rodape: String, nomeArquivo: String, printConsole: boolean): String
+}
+LaudoTemplate <|.. LaudoTexto
+LaudoTemplate <|.. LaudoHtml
+LaudoTemplate <|.. LaudoPdf
+LaudoFacade --> LaudoFactoryRegistry
+LaudoFactoryRegistry --> LaudoTemplate
+LaudoFacade --> GeradorLaudo
+GeradorLaudo --> LaudoTemplate
 
-    %% =========================
-    %% VALIDADORES
-    %% =========================
-    class ValidadorExame {
-        <<interface>>
-        +validar(exame: Exame): boolean
-    }
+%% =========================
+%% LAUDOS ESPECÍFICOS
+%% =========================
+class Laudo {
+    <<interface>>
+    +gerarCorpo(exame: Exame): String
+}
+class LaudoHemograma {
+    -template: LaudoTemplate
+    +gerarCorpo(exame: Exame): String
+}
+class LaudoRessonancia {
+    -template: LaudoTemplate
+    +gerarCorpo(exame: Exame): String
+}
+class LaudoFactory {
+    +criarLaudo(exame: Exame, template: LaudoTemplate): Laudo
+}
+Laudo <|.. LaudoHemograma
+Laudo <|.. LaudoRessonancia
+LaudoFactory --> Laudo
+LaudoFactory --> LaudoTemplate
+LaudoHemograma --> LaudoTemplate
+LaudoRessonancia --> LaudoTemplate
+LaudoFacade --> LaudoFactory
+LaudoFacade --> Laudo
 
-    class ValidadorHemograma { +validar(exame: Exame): boolean }
-    class ValidadorRessonancia { +validar(exame: Exame): boolean }
-    class ValidadorFactory { +criarValidador(exame: Exame): ValidadorExame }
+%% =========================
+%% PADRÃO DECORATOR
+%% =========================
 
-    %% =========================
-    %% PAGAMENTO (STRATEGY)
-    %% =========================
-    class ProcessadorPagamento {
-        -exame: Exame
-        -descontoStrategy: DescontoStrategy
-        +processarPagamento(): void
-        +calcularCusto(estrategia: DescontoStrategy): double
-    }
+class DecoradorLaudo {
+    <<abstract>>
+    -laudo: LaudoTemplate
+    +DecoradorLaudo(laudo: LaudoTemplate)
+    +gerarConteudo(cabecalho: String, corpo: String, rodape: String): String
+    +salvarEmArquivo(conteudo: String, nomeArquivo: String): String
+}
+class DecoradorCarimbo {
+    +gerarConteudo(cabecalho: String, corpo: String, rodape: String): String
+}
+class DecoradorRodapeConfidencial {
+    +gerarConteudo(cabecalho: String, corpo: String, rodape: String): String
+}
+LaudoTemplate <|.. DecoradorLaudo
+DecoradorLaudo <|-- DecoradorCarimbo
+DecoradorLaudo <|-- DecoradorRodapeConfidencial
+DecoradorLaudo o-- LaudoTemplate
+LaudoFacade --> DecoradorCarimbo
 
-    class DescontoStrategy {
-        <<interface>>
-        +aplicarDesconto(valor: double): double
-    }
+%% =========================
+%% PADRÃO STRATEGY
+%% =========================
+class DescontoStrategy {
+    <<interface>>
+    +aplicarDesconto(valor: double): double
+}
+class DescontoConvenio {
+    -PORCENTAGEM: double = 0.15
+    +aplicarDesconto(valor: double): double
+}
+class DescontoIdoso {
+    -PORCENTAGEM: double = 0.08
+    +aplicarDesconto(valor: double): double
+}
+class DescontoComposto {
+    -descontos: List~DescontoStrategy~
+    +aplicarDesconto(valor: double): double
+}
+class ProcessadorPagamento {
+    -exame: Exame
+    -descontoStrategy: DescontoStrategy
+    -custoFinal: double
+    +calcularCusto(): double
+    +processarPagamento(): void
+    +getCustoFinal(): double
+    +setDescontoStrategy(estrategia: DescontoStrategy): void
+}
+DescontoStrategy <|.. DescontoConvenio
+DescontoStrategy <|.. DescontoIdoso
+DescontoStrategy <|.. DescontoComposto
+ExameFacade --> ProcessadorPagamento
+ProcessadorPagamento --> Exame
+ProcessadorPagamento --> DescontoStrategy
 
-    class DescontoConvenio {
-        -PORCENTAGEM: double = 0.15
-        +aplicarDesconto(valor: double): double
-    }
+%% =========================
+%% VALIDAÇÃO
+%% =========================
+class ValidadorExame {
+    <<interface>>
+    +validar(exame: Exame): List~String~
+}
+class ValidadorBase {
+    <<abstract>>
+    +validarExameBase(exame: Exame): List~String~
+}
+class ValidadorHemograma {
+    +validar(exame: Exame): List~String~
+    +getStatusHemoglobina(valor: double, sexo: Sexo): String
+    +getStatusLeucocitos(valor: double): String
+    +getStatusHematocrito(valor: double, sexo: Sexo): String
+    +getStatusPlaquetas(valor: double): String
+}
+class ValidadorRessonancia {
+    -areasValidas: List~String~
+    +validar(exame: Exame): List~String~
+}
+class ValidadorFactory {
+    +criarValidador(exame: Exame): ValidadorExame
+}
+ValidadorExame <|.. ValidadorHemograma
+ValidadorExame <|.. ValidadorRessonancia
+ValidadorBase <|-- ValidadorHemograma
+ValidadorBase <|-- ValidadorRessonancia
+ProcessamentoFacade --> ValidadorFactory
+ValidadorFactory --> ValidadorExame
+ValidadorHemograma --> Hemograma
+ValidadorRessonancia --> Ressonancia
+ValidadorHemograma --> Sexo
+ValidadorRessonancia --> FaixaEtaria
 
-    class DescontoIdoso {
-        -PORCENTAGEM: double = 0.08
-        +aplicarDesconto(valor: double): double
-    }
-
-    %% =========================
-    %% LAUDOS (TEMPLATE METHOD)
-    %% =========================
-    class GeradorLaudo {
-        +gerarLaudo(exame: Exame, formato: String): LaudoTemplate
-    }
-
-    class LaudoTemplate {
-        <<abstract>>
-        +gerarCabecalho(): String
-        +gerarCorpo(): String
-        +gerarRodape(): String
-        +gerarLaudoCompleto(): String
-    }
-
-    class LaudoTexto { +gerarCabecalho(): String +gerarCorpo(): String +gerarRodape(): String }
-    class LaudoHTML { +gerarCabecalho(): String +gerarCorpo(): String +gerarRodape(): String }
-    class LaudoPDF { +gerarCabecalho(): String +gerarCorpo(): String +gerarRodape(): String }
-
-    %% =========================
-    %% DECORATOR DE LAUDOS
-    %% =========================
-    class DecoradorLaudo {
-        <<abstract>>
-        -laudoDecorado: LaudoTemplate
-        +gerarLaudoDecorado(): String
-    }
-
-    class DecoradorCarimbo { +gerarLaudoDecorado(): String }
-
-    %% =========================
-    %% OBSERVER (NOTIFICAÇÕES)
-    %% =========================
-    class NotificadorObserver {
-        <<interface>>
-        +atualizar(exame: Exame): void
-    }
-
-    class NotificadorWhatsApp { +atualizar(exame: Exame): void }
-    class NotificadorTelegram { +atualizar(exame: Exame): void }
-
-    %% =========================
-    %% GERENCIADOR DE EXAMES
-    %% =========================
-    class GerenciadorDeProcessamentoDeExames {
-        -PriorityQueueExame filaExames
-        +adicionarExame(exame: Exame): void
-        +processarProximoExame(): void
-        +notificarLaudoPronto(exame: Exame): void
-        +marcarExameComoPronto(exame: Exame): void
-    }
-
-    %% =========================
-    %% RELACIONAMENTOS
-    %% =========================
-    SistemaDiagnosticos --> SistemaDiagnosticosFacade
-    SistemaDiagnosticosFacade --> FabricaExame
-    SistemaDiagnosticosFacade --> GerenciadorDeProcessamentoDeExames
-    SistemaDiagnosticosFacade --> ProcessadorPagamento
-    SistemaDiagnosticosFacade --> GeradorLaudo
-    SistemaDiagnosticosFacade --> DescontoStrategy
-    SistemaDiagnosticosFacade --> ValidadorFactory
-
-    GerenciadorDeProcessamentoDeExames --> Exame
-    GerenciadorDeProcessamentoDeExames --> NotificadorObserver
-
-    ValidadorFactory --> ValidadorExame
-    ValidadorExame <|.. ValidadorHemograma
-    ValidadorExame <|.. ValidadorRessonancia
-    ValidadorHemograma ..> Hemograma
-    ValidadorRessonancia ..> Ressonancia
-
-    ProcessadorPagamento --> Exame
-    ProcessadorPagamento --> DescontoStrategy
-
-    GeradorLaudo --> LaudoTemplate
-    LaudoTemplate <|-- LaudoTexto
-    LaudoTemplate <|-- LaudoHTML
-    LaudoTemplate <|-- LaudoPDF
-    LaudoTemplate <|-- DecoradorLaudo
-    DecoradorLaudo <|-- DecoradorCarimbo
-    DecoradorLaudo o-- LaudoTemplate
-
-    Exame --> StatusExameState
-    Exame <|-- Hemograma
-    Exame <|-- Ressonancia
-    Exame --> Prioridade
-    Exame --> LaudoTemplate
-
-    StatusExameState <|.. ExamePendente
-    StatusExameState <|.. ExameProcessando
-    StatusExameState <|.. ExameConcluido
-    StatusExameState <|.. ExameCancelado
-
-    Paciente "1" *-- "*" Exame
-    Medico "1" -- "*" Exame
-
-    FabricaExame <|.. FabricaHemograma
-    FabricaExame <|.. FabricaRessonancia
-
-    DescontoStrategy <|.. DescontoConvenio
-    DescontoStrategy <|.. DescontoIdoso
-
-    NotificadorObserver <|.. NotificadorWhatsApp
-    NotificadorObserver <|.. NotificadorTelegram
-    NotificadorObserver --> Exame
-    NotificadorObserver --> Paciente
+%% =========================
+%% PADRÃO OBSERVER
+%% =========================
+class NotificadorObserver {
+    <<interface>>
+    +atualizar(exame: Exame, caminhoLaudo: String): void
+}
+class NotificadorEmail {
+    +atualizar(exame: Exame, caminhoLaudo: String): void
+    -enviarEmail(destinatario: String, assunto: String, corpo: String, caminhoAnexo: String): void
+}
+class NotificadorTelegram {
+    -chatId: String
+    +atualizar(exame: Exame, caminhoLaudo: String): void
+    -enviarMensagem(chatId: String, mensagem: String): void
+}
+NotificadorObserver <|.. NotificadorEmail
+NotificadorObserver <|.. NotificadorTelegram
+NotificadorFacade --> NotificadorObserver
+NotificadorObserver --> Exame
+%% =========================
+%% GERENCIADOR DE EXAMES
+%% =========================
+class GerenciadorDeProcessamentoDeExames {
+    -filaExames: PriorityQueue~Exame~
+    -notificadores: List~NotificadorObserver~
+    +adicionarExame(exame: Exame): void
+    +processarProximoExame(): Exame
+    +notificarLaudoPronto(exame: Exame, caminhoLaudo: String): void
+    +adicionarNotificador(notificador: NotificadorObserver): void
+    +getNotificadores(): List~NotificadorObserver~
+}
+ProcessamentoFacade --> GerenciadorDeProcessamentoDeExames
+GerenciadorDeProcessamentoDeExames --> Exame
+GerenciadorDeProcessamentoDeExames --> NotificadorObserver
