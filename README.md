@@ -204,18 +204,21 @@ Biblioteca Jakarta Mail (para notificações por email)
 Compilação e Execução
 Clone o repositório:
 
-bash
+```bash
 git clone https://github.com/seu-usuario/st-diagnosticos.git
 cd st-diagnosticos
+```
+
 Compile o projeto:
 
-bash
+```bash
 javac -d bin -cp "src" src/core/SistemaDiagnosticos.java
+```
 Execute a aplicação:
 
-bash
+```bash
 java -cp "bin" core.SistemaDiagnosticos
-
+```
 Use o menu interativo para:
 
 Agendar exames
