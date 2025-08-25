@@ -2,6 +2,12 @@
 
 Sistema completo para gerenciamento de exames médicos, incluindo agendamento, processamento, pagamento, geração de laudos e envio de notificações automáticas.
 
+## Equipe de desenvolvedoras: 
+* Ananda Guedes
+* Angêlica Araújo
+* Letícia Leite
+* Maira Larissa
+
 ## Funcionalidades
 
 * Agendamento de exames médicos com diferentes tipos (Hemograma, Ressonância).
