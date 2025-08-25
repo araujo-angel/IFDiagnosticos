@@ -113,8 +113,11 @@ flowchart TD
     LaudoFacade -->|11. Notifica| NotificadorFacade
     NotificadorFacade -->|12. Envia| NotificadorObserver
 ```
+
+---
 ![diagrama de classe](hist_diagrama/v6_diagrama.png) 
 ![diagrama de classe](V6_flowchart_diagram.png) 
+---
 
 ## Padrões de Projeto Utilizados
 
