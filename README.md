@@ -164,37 +164,62 @@ src/
 │   ├── NotificadorFacade.java
 │   ├── ProcessamentoFacade.java
 │   └── CargaDadosFacade.java
-├── model/
-│   ├── Paciente.java
-│   ├── Medico.java
-│   └── exame/
-│       ├── Exame.java
-│       ├── Hemograma.java
-│       └── Ressonancia.java
 ├── factories/
 │   ├── FabricaExame.java
 │   ├── FabricaHemograma.java
 │   ├── FabricaRessonancia.java
 │   └── ExameFactoryRegistry.java
-├── validators/
-│   ├── ValidadorFactory.java
-│   ├── ValidadorExame.java
-│   ├── ValidadorHemograma.java
-│   └── ValidadorRessonancia.java
-├── payments/
+├── manager/        
+│   └── GerenciadorDeProcessamento.java
+├── model/
+│   ├── enums/
+│   │   ├── FaixaEtaria.java
+│   │   ├── Prioridade.java
+│   │   └── Sexo.java
+│   ├── exame/
+│   │   ├── Exame.java
+│   │   ├── Hemograma.java
+│   │   └── Ressonancia.java
+│   ├── laudo/
+│   │   ├── Laudo.java
+│   │   ├── LaudoHemograma.java
+│   │   ├── LaudoRessonancia.java
+│   ├── Medico.java
+│   └── Paciente.java
+├── notifier/              
+│   ├── NotificadorEmail.java
+│   ├── NotificadorTelegram.java
+│   └── NotificadorObserver.java
+├── payments/            
 │   ├── ProcessadorPagamento.java
 │   ├── DescontoStrategy.java
 │   ├── DescontoConvenio.java
 │   ├── DescontoIdoso.java
 │   └── DescontoComposto.java
-├── states/
-│   ├── StatusExameState.java
-│   ├── ExameSolicitado.java
-│   ├── ExameProcessando.java
-│   ├── ExameConcluido.java
-│   └── ExameCancelado.java
-├── reports/
+├── reports/       
 │   ├── GeradorLaudo.java
+│   ├── decorator/
+│   │   ├── DecoradorCarimbo.java
+│   │   ├── DecoradorLaudo.java
+│   │   └── DecoradorRodapeConfidencial.java
+│   └── template/
+│       ├── LaudoTemplate.java
+│       ├── TemplateHemograma.java
+│       └── TemplateRessonancia.java
+├── resources/
+│   ├── dados.csv
+├── states/
+│   ├── ExameCancelado.java
+│   ├── ExameConcluido.java
+│   ├── ExameProcessando.java
+│   ├── ExameSolicitado.java
+│   └── StatusExameState.java
+├── validators/
+│   ├── ValidadorBase.java
+│   ├── ValidadorExame.java
+│   ├── ValidadorFactory.java
+│   ├── ValidadorHemograma.java
+│   └── ValidadorRessonancia.java
 ```
 ---
 
