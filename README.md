@@ -1,4 +1,4 @@
-# ST Diagnósticos
+# IF Diagnósticos
 
 Sistema completo para gerenciamento de exames médicos, incluindo agendamento, processamento, pagamento, geração de laudos e envio de notificações automáticas.
 
